@@ -79,12 +79,37 @@ public class FlowPlotDemo2 extends JFrame {
      */
     private static FlowDataset createDataset() {
         DefaultFlowDataset<String> dataset = new DefaultFlowDataset<>();
-        dataset.setFlow(0, "Africa", "East Asia", 3.142471);
-        dataset.setFlow(0, "Africa", "Latin America", 2.107883);
-        dataset.setFlow(0, "B", "East Asia", 2.0);
-        dataset.setFlow(0, "B", "Latin America", 2.0);
-        dataset.setFlow(0, "B", "Z", 2.0);
-        
+        dataset.setFlow(0, "Africa", "Africa", 3.142471);
+        dataset.setFlow(0, "Africa", "Europe", 2.107883);
+        dataset.setFlow(0, "Africa", "North America", 0.540887);
+        dataset.setFlow(0, "Africa", "West Asia", 0.673004);
+        dataset.setFlow(0, "East Asia", "East Asia", 1.630997);
+        dataset.setFlow(0, "East Asia", "Europe", 0.601265);
+        dataset.setFlow(0, "East Asia", "North America", 0.97306);
+        dataset.setFlow(0, "East Asia", "Oceania", 0.333608);
+        dataset.setFlow(0, "East Asia", "South East Asia", 0.380388);
+        dataset.setFlow(0, "East Asia", "West Asia", 0.869311);
+        dataset.setFlow(0, "Europe", "Europe", 2.401476);
+        dataset.setFlow(0, "Latin America", "Europe", 1.762587);
+        dataset.setFlow(0, "Latin America", "Latin America", 0.879198);
+        dataset.setFlow(0, "Latin America", "North America", 3.627847);
+        dataset.setFlow(0, "North America", "Europe", 1.215929);
+        dataset.setFlow(0, "North America", "North America", 0.276908);
+        dataset.setFlow(0, "Oceania", "Europe", 0.17037);
+        dataset.setFlow(0, "Oceania", "Oceania", 0.190706);
+        dataset.setFlow(0, "South East Asia", "East Asia", 0.525881);
+        dataset.setFlow(0, "South Asia", "Europe", 1.390272);
+        dataset.setFlow(0, "South Asia", "North America", 1.508008);
+        dataset.setFlow(0, "South Asia", "Oceania", 0.34742);
+        dataset.setFlow(0, "South Asia", "South Asia", 1.307907);
+        dataset.setFlow(0, "South Asia", "West Asia", 4.902081);
+        dataset.setFlow(0, "South East Asia", "East Asia", 0.145264);
+        dataset.setFlow(0, "South East Asia", "Europe", 0.468762);
+        dataset.setFlow(0, "South East Asia", "North America", 1.057904);
+        dataset.setFlow(0, "South East Asia", "Oceania", 0.278746);
+        dataset.setFlow(0, "South East Asia", "South East Asia", 0.781316);
+        dataset.setFlow(0, "Soviet Union", "Europe", 0.60923);
+        dataset.setFlow(0, "Soviet Union", "Soviet Union", 1.870501);
         return dataset;
     }
 
@@ -110,12 +135,19 @@ public class FlowPlotDemo2 extends JFrame {
         Color[] colors = createFluoColors();
        
         plot.setNodeFillColor(new NodeKey(0, "Africa"), colors[0]);
+        plot.setNodeFillColor(new NodeKey(1, "Africa"), colors[0]);
+        plot.setNodeFillColor(new NodeKey(0, "East Asia"), colors[1]);
         plot.setNodeFillColor(new NodeKey(1, "East Asia"), colors[1]);
-        plot.setNodeFillColor(new NodeKey(1, "Latin America"), colors[9]);
-        plot.setNodeFillColor(new NodeKey(0, "B"), colors[3]);
-        plot.setNodeFillColor(new NodeKey(1, "Z"), colors[4]);
-        plot.setNodeFillColor(new NodeKey(2, "D"), colors[5]);
-        plot.setNodeFillColor(new NodeKey(2, "E"), colors[7]);
+        plot.setNodeFillColor(new NodeKey(0, "Latin America"), colors[2]);
+        plot.setNodeFillColor(new NodeKey(1, "Latin America"), colors[2]);
+        plot.setNodeFillColor(new NodeKey(0, "Europe"), colors[3]);
+        plot.setNodeFillColor(new NodeKey(1, "Europe"), colors[3]);
+        plot.setNodeFillColor(new NodeKey(0, "North America"), colors[4]);
+        plot.setNodeFillColor(new NodeKey(1, "North America"), colors[4]);
+        plot.setNodeFillColor(new NodeKey(0, "Oceania"), colors[5]);
+        plot.setNodeFillColor(new NodeKey(1, "Oceania"), colors[5]);
+        plot.setNodeFillColor(new NodeKey(0, "South Asia"), colors[6]);
+        plot.setNodeFillColor(new NodeKey(1, "South Asia"), colors[6]);
         JFreeChart chart = new JFreeChart(title, plot);
         return chart;
     }
@@ -128,7 +160,7 @@ public class FlowPlotDemo2 extends JFrame {
      * @return A sample chart.
      */
     private static JFreeChart createChart(FlowDataset dataset) {
-        JFreeChart chart = createFlowPlot("Flow Plot", dataset);
+        JFreeChart chart = createFlowPlot("Migration Patterns", dataset);
         return chart;
     }    
     

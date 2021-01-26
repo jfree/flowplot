@@ -36,7 +36,9 @@
 
 package org.jfree.chart.plot.flow;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -51,6 +53,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.PlotState;
 import org.jfree.chart.text.TextUtils;
 import org.jfree.chart.ui.TextAnchor;
+import org.jfree.chart.ui.VerticalAlignment;
 import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.FlowDatasetUtils;
 import org.jfree.data.flow.FlowKey;
@@ -79,6 +82,8 @@ public class FlowPlot extends Plot {
     
     private Paint defaultNodeLabelPaint;
     
+    private VerticalAlignment nodeLabelAlignment;
+    
     private double nodeLabelOffsetX;
     
     private double nodeLabelOffsetY;
@@ -88,6 +93,7 @@ public class FlowPlot extends Plot {
         this.nodeColorMap = new HashMap<>();
         this.defaultNodeLabelFont = new Font(Font.DIALOG, Font.BOLD, 12);
         this.defaultNodeLabelPaint = Color.BLACK;
+        this.nodeLabelAlignment = VerticalAlignment.CENTER;
         this.nodeLabelOffsetX = 2.0;
         this.nodeLabelOffsetY = 2.0;
     }
@@ -146,7 +152,16 @@ public class FlowPlot extends Plot {
         this.defaultNodeLabelPaint = defaultNodeLabelPaint;
         fireChangeEvent();
     }
-    
+
+    /**
+     * Render the plot graphics within the specified area.
+     * 
+     * @param g2
+     * @param area
+     * @param anchor
+     * @param parentState
+     * @param info 
+     */
     @Override
     public void draw(Graphics2D g2, Rectangle2D area, Point2D anchor, PlotState parentState, PlotRenderingInfo info) {
 
@@ -173,6 +188,13 @@ public class FlowPlot extends Plot {
         }
         
         double stageWidth = (area.getWidth() - ((stageCount + 1) * this.nodeWidth)) / stageCount;
+        double flowOffset = area.getWidth() * this.flowMargin;
+        
+        Map<NodeKey, Rectangle2D> nodeRects = new HashMap<>();
+        
+        // iterate over all the stages, we can render the source node rects and
+        // the flows ... we should add the destination node rects last, then
+        // in a final pass add the labels
         for (int stage = 0; stage < this.dataset.getStageCount(); stage++) {
             
             double stageLeft = area.getX() + (stage + 1) * this.nodeWidth + (stage * stageWidth);
@@ -181,7 +203,6 @@ public class FlowPlot extends Plot {
             // calculate the source node and flow rectangles
             double margin = this.nodeMargin * area.getHeight();
             double availableHeight = area.getHeight() - ((maxNodes-1) * margin);
-            Map<Comparable, Rectangle2D> sourceNodeRects = new HashMap<>();
             Map<FlowKey, Rectangle2D> sourceFlowRects = new HashMap<>();
             double nodeY = area.getY();
             for (Object s : this.dataset.getSources(stage)) {
@@ -189,7 +210,7 @@ public class FlowPlot extends Plot {
                 double inflow = FlowDatasetUtils.calculateInflow(dataset, source, stage);
                 double outflow = FlowDatasetUtils.calculateOutflow(dataset, source, stage);
                 double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
-                sourceNodeRects.put(source, new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight));
+                nodeRects.put(new NodeKey(stage, source), new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight));
                 double y = nodeY;
                 for (Object d : this.dataset.getDestinations(stage)) {
                     Comparable destination = (Comparable) d;
@@ -205,7 +226,7 @@ public class FlowPlot extends Plot {
             }
             
             // calculate the destination rectangles
-            Map<Comparable, Rectangle2D> destNodeRects = new HashMap<>();
+            //Map<Comparable, Rectangle2D> destNodeRects = new HashMap<>();
             Map<FlowKey, Rectangle2D> destFlowRects = new HashMap<>();
             nodeY = area.getY();
             for (Object d : this.dataset.getDestinations(stage)) {
@@ -213,7 +234,7 @@ public class FlowPlot extends Plot {
                 double inflow = FlowDatasetUtils.calculateInflow(dataset, destination, stage + 1);
                 double outflow = FlowDatasetUtils.calculateOutflow(dataset, destination, stage + 1);
                 double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
-                destNodeRects.put(destination, new Rectangle2D.Double(stageRight, nodeY, nodeWidth, nodeHeight));
+                nodeRects.put(new NodeKey(stage + 1, destination), new Rectangle2D.Double(stageRight, nodeY, nodeWidth, nodeHeight));
                 double y = nodeY;
                 for (Object s : this.dataset.getSources(stage)) {
                     Comparable source = (Comparable) s;
@@ -228,11 +249,10 @@ public class FlowPlot extends Plot {
                 nodeY = nodeY + nodeHeight + margin;
             }
         
-            double flowOffset = area.getWidth() * this.flowMargin;
             for (Object s : this.dataset.getSources(stage)) {
                 Comparable source = (Comparable) s;
                 NodeKey nodeKey = new NodeKey(stage, source);
-                Rectangle2D nodeRect = sourceNodeRects.get(source);
+                Rectangle2D nodeRect = nodeRects.get(nodeKey);
                 g2.setPaint(getNodeColor(nodeKey));
                 g2.fill(nodeRect);
                                 
@@ -253,30 +273,38 @@ public class FlowPlot extends Plot {
                     connect.closePath();
                     Color nc = getNodeColor(nodeKey); 
                     GradientPaint gp = new GradientPaint((float) sourceRect.getMaxX(), 0, nc, (float) destRect.getMinX(), 0, new Color(nc.getRed(), nc.getGreen(), nc.getBlue(), 128));
+                    Composite saved = g2.getComposite();
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
                     g2.setPaint(gp);
                     g2.fill(connect);
-
+                    g2.setComposite(saved);
                 }
                 
-                g2.setFont(this.defaultNodeLabelFont);
-                g2.setPaint(this.defaultNodeLabelPaint);
-                TextUtils.drawAlignedString(source.toString(), g2, (float) (nodeRect.getMaxX() + flowOffset + this.nodeLabelOffsetX), (float) (nodeRect.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_LEFT);
+            }
+        }
+        
+        // now draw the destination nodes
+        int lastStage = this.dataset.getStageCount() - 1;
+        for (Object d : this.dataset.getDestinations(lastStage)) {
+            Comparable destination = (Comparable) d;
+            NodeKey nodeKey = new NodeKey(lastStage + 1, destination);
+            Rectangle2D nodeRect = nodeRects.get(nodeKey);
+            if (nodeRect != null) {
+                g2.setPaint(getNodeColor(nodeKey));
+                g2.fill(nodeRect);
 
-                // when rendering the final stage, draw the destination nodes
-                if (stage == this.dataset.getStageCount() - 1) {
-                    for (Object d : this.dataset.getDestinations(stage)) {
-                        Comparable destination = (Comparable) d;
-                        nodeKey = new NodeKey(stage, destination);
-                        nodeRect = destNodeRects.get(destination);
-                        g2.setPaint(getNodeColor(nodeKey));
-                        g2.fill(nodeRect);
-
-                        g2.setFont(this.defaultNodeLabelFont);
-                        g2.setPaint(this.defaultNodeLabelPaint);
-                        TextUtils.drawAlignedString(destination.toString(), g2, (float) (nodeRect.getX() - flowOffset - this.nodeLabelOffsetX), (float) (nodeRect.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_RIGHT);
-
-                    }
-                }
+            }
+        }
+        
+        // now draw all the labels over top of everything else
+        g2.setFont(this.defaultNodeLabelFont);
+        g2.setPaint(this.defaultNodeLabelPaint);
+        for (NodeKey key : nodeRects.keySet()) {
+            Rectangle2D r = nodeRects.get(key);
+            if (key.getStage() < this.dataset.getStageCount()) {
+                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getMaxX() + flowOffset + this.nodeLabelOffsetX), (float) (r.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_LEFT);                
+            } else {
+                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getX() - flowOffset - this.nodeLabelOffsetX), (float) (r.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_RIGHT);                
             }
         }
     }
