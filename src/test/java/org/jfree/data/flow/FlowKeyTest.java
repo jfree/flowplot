@@ -37,7 +37,6 @@
 package org.jfree.data.flow;
 
 import org.jfree.chart.TestUtils;
-import org.jfree.chart.util.CloneUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

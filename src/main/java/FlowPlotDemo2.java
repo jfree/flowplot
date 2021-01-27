@@ -45,6 +45,9 @@ import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.NodeKey;
 
+/**
+ * A flow plot showing migration data from https://www.data-to-viz.com/graph/sankey.html
+ */
 public class FlowPlotDemo2 extends JFrame {
     
     /**
@@ -68,12 +71,11 @@ public class FlowPlotDemo2 extends JFrame {
         FlowDataset dataset = createDataset();
         JFreeChart chart = createChart(dataset);
         ChartPanel panel = new ChartPanel(chart);
-        panel.setMouseWheelEnabled(true);
         return panel;
     }
 
     /**
-     * Creates a dataset.
+     * Creates a dataset (source https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/13_AdjacencyDirectedWeighted.csv).
      *
      * @return a dataset.
      */
@@ -110,6 +112,9 @@ public class FlowPlotDemo2 extends JFrame {
         dataset.setFlow(0, "South East Asia", "South East Asia", 0.781316);
         dataset.setFlow(0, "Soviet Union", "Europe", 0.60923);
         dataset.setFlow(0, "Soviet Union", "Soviet Union", 1.870501);
+        dataset.setFlow(0, "West Asia", "Europe", 0.449623);
+        dataset.setFlow(0, "West Asia", "North America", 0.169274);
+        dataset.setFlow(0, "West Asia", "West Asia", 0.927243);
         return dataset;
     }
 
@@ -127,8 +132,15 @@ public class FlowPlotDemo2 extends JFrame {
         result[9] = new Color(242, 206, 47);
         return result;
     }
-   
-    static final JFreeChart createFlowPlot(String title, FlowDataset dataset) {
+    
+    /**
+     * Creates a sample chart.
+     *
+     * @param dataset  the dataset.
+     *
+     * @return A sample chart.
+     */
+    private static JFreeChart createChart(FlowDataset dataset) {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
         plot.setDefaultNodeLabelPaint(Color.WHITE);
@@ -148,19 +160,7 @@ public class FlowPlotDemo2 extends JFrame {
         plot.setNodeFillColor(new NodeKey(1, "Oceania"), colors[5]);
         plot.setNodeFillColor(new NodeKey(0, "South Asia"), colors[6]);
         plot.setNodeFillColor(new NodeKey(1, "South Asia"), colors[6]);
-        JFreeChart chart = new JFreeChart(title, plot);
-        return chart;
-    }
-    
-    /**
-     * Creates a sample chart.
-     *
-     * @param dataset  the dataset.
-     *
-     * @return A sample chart.
-     */
-    private static JFreeChart createChart(FlowDataset dataset) {
-        JFreeChart chart = createFlowPlot("Migration Patterns", dataset);
+        JFreeChart chart = new JFreeChart("Migration Patterns", plot);
         return chart;
     }    
     

@@ -46,27 +46,38 @@ import java.awt.Paint;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.PlotState;
+import org.jfree.chart.plot.flow.labels.DefaultFlowLabelGenerator;
+import org.jfree.chart.plot.flow.labels.FlowLabelGenerator;
 import org.jfree.chart.text.TextUtils;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.chart.util.Args;
+import org.jfree.chart.util.PublicCloneable;
 import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.FlowDatasetUtils;
 import org.jfree.data.flow.FlowKey;
 import org.jfree.data.flow.NodeKey;
 
 /**
+ * A plot for visualising flows.
  */
-public class FlowPlot extends Plot {
+public class FlowPlot extends Plot implements Cloneable, PublicCloneable, 
+        Serializable {
 
+    /** The source of data. */
     private FlowDataset dataset;
     
     /** 
-     * The percentage of the stage width to assign to a gap between the node
+     * The percentage of the plot width to assign to a gap between the nodes
      * and the flow representation. 
      */
     private double flowMargin = 0.005;
@@ -88,14 +99,26 @@ public class FlowPlot extends Plot {
     
     private double nodeLabelOffsetY;
     
+    private FlowLabelGenerator toolTipGenerator; 
+    
+    /**
+     * Creates a new instance that will source data from the specified dataset.
+     * 
+     * @param dataset  the dataset. 
+     */
     public FlowPlot(FlowDataset dataset) {
         this.dataset = dataset;
+        if (dataset != null) {
+            dataset.addChangeListener(this);
+        }
+
         this.nodeColorMap = new HashMap<>();
         this.defaultNodeLabelFont = new Font(Font.DIALOG, Font.BOLD, 12);
         this.defaultNodeLabelPaint = Color.BLACK;
         this.nodeLabelAlignment = VerticalAlignment.CENTER;
         this.nodeLabelOffsetX = 2.0;
         this.nodeLabelOffsetY = 2.0;
+        this.toolTipGenerator = new DefaultFlowLabelGenerator();
     }
     
     @Override
@@ -112,6 +135,14 @@ public class FlowPlot extends Plot {
         fireChangeEvent();
     }
     
+    public double getFlowMargin() {
+        return this.flowMargin;
+    }
+    
+    public void setFlowMargin(double margin) {
+        this.flowMargin = margin;
+        fireChangeEvent();
+    }
 
     public double getNodeWidth() {
         return nodeWidth;
@@ -156,17 +187,26 @@ public class FlowPlot extends Plot {
     /**
      * Render the plot graphics within the specified area.
      * 
-     * @param g2
-     * @param area
-     * @param anchor
-     * @param parentState
-     * @param info 
+     * @param g2  the graphics target ({@code null} not permitted).
+     * @param area  the plot area ({@code null} not permitted).
+     * @param anchor  the anchor point (ignored).
+     * @param parentState  the parent state (ignored).
+     * @param info  the plot rendering info.
      */
     @Override
     public void draw(Graphics2D g2, Rectangle2D area, Point2D anchor, PlotState parentState, PlotRenderingInfo info) {
-
-        drawBackground(g2, area);
+        Args.nullNotPermitted(g2, "g2");
+        Args.nullNotPermitted(area, "area");
         
+        info.setPlotArea(area);
+        EntityCollection entities = info.getOwner().getEntityCollection();
+        RectangleInsets insets = getInsets();
+        insets.trim(area);        
+        info.setDataArea(area);
+        
+        // use default JFreeChart background handling
+        drawBackground(g2, area);
+
         int stageCount = this.dataset.getStageCount();
         
         // we need to ensure there is space to show all the inflows and all 
@@ -210,7 +250,11 @@ public class FlowPlot extends Plot {
                 double inflow = FlowDatasetUtils.calculateInflow(dataset, source, stage);
                 double outflow = FlowDatasetUtils.calculateOutflow(dataset, source, stage);
                 double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
-                nodeRects.put(new NodeKey(stage, source), new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight));
+                Rectangle2D nodeRect = new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight);
+                if (entities != null) {
+                    entities.add(new ChartEntity(nodeRect, source.toString()));                
+                }
+                nodeRects.put(new NodeKey(stage, source), nodeRect);
                 double y = nodeY;
                 for (Object d : this.dataset.getDestinations(stage)) {
                     Comparable destination = (Comparable) d;
@@ -277,6 +321,9 @@ public class FlowPlot extends Plot {
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
                     g2.setPaint(gp);
                     g2.fill(connect);
+                    if (entities != null) {
+                        entities.add(new FlowEntity(connect, this.toolTipGenerator.generateLabel(this.dataset, flowKey), ""));                
+                    }
                     g2.setComposite(saved);
                 }
                 
@@ -292,6 +339,9 @@ public class FlowPlot extends Plot {
             if (nodeRect != null) {
                 g2.setPaint(getNodeColor(nodeKey));
                 g2.fill(nodeRect);
+                if (entities != null) {
+                    entities.add(new ChartEntity(nodeRect, destination.toString()));                
+                }
 
             }
         }
@@ -302,11 +352,28 @@ public class FlowPlot extends Plot {
         for (NodeKey key : nodeRects.keySet()) {
             Rectangle2D r = nodeRects.get(key);
             if (key.getStage() < this.dataset.getStageCount()) {
-                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getMaxX() + flowOffset + this.nodeLabelOffsetX), (float) (r.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_LEFT);                
+                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getMaxX() + flowOffset + this.nodeLabelOffsetX), (float) (labelY(r)), TextAnchor.CENTER_LEFT);                
             } else {
-                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getX() - flowOffset - this.nodeLabelOffsetX), (float) (r.getY() + this.nodeLabelOffsetY), TextAnchor.TOP_RIGHT);                
+                TextUtils.drawAlignedString(key.getNode().toString(), g2, (float) (r.getX() - flowOffset - this.nodeLabelOffsetX), (float) (labelY(r)), TextAnchor.CENTER_RIGHT);                
             }
         }
     }
     
+    /**
+     * Computes the y-coordinate for a node label taking into account the 
+     * current alignment settings.
+     * 
+     * @param r  the node rectangle.
+     * 
+     * @return The y-coordinate for the label. 
+     */
+    private double labelY(Rectangle2D r) {
+        if (this.nodeLabelAlignment == VerticalAlignment.TOP) {
+            return r.getY() + this.nodeLabelOffsetY;
+        } else if (this.nodeLabelAlignment == VerticalAlignment.BOTTOM) {
+            return r.getMaxY() - this.nodeLabelOffsetY;
+        } else {
+            return r.getCenterY();
+        }
+    }
 }

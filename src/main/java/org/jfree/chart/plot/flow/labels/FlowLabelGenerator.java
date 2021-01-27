@@ -24,9 +24,9 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * --------------
- * FlowUtils.java
- * --------------
+ * -----------------------
+ * FlowLabelGenerator.java
+ * -----------------------
  * (C) Copyright 2021, by Object Refinery Limited and Contributors.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -34,47 +34,16 @@
  *
  */
 
-package org.jfree.chart.plot.flow;
+package org.jfree.chart.plot.flow.labels;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jfree.chart.util.Args;
-import org.jfree.chart.util.ObjectUtils;
+import org.jfree.data.flow.FlowDataset;
+import org.jfree.data.flow.FlowKey;
 
 /**
- * Utility methods used by the {@link FlowPlot} class.
+ *
  */
-public class FlowUtils {
+public interface FlowLabelGenerator {
     
-    // THE FOLLOWING METHOD IS PART OF THE CloneUtils class in JFreeChart
-
-    /**
-     * Returns a list containing cloned copies of the items in the source
-     * list.
-     * 
-     * @param source  the source list ({@code null} not permitted).
-     * 
-     * @return A new list. 
-     */
-    public static List<?> cloneList(List<?> source) {
-        Args.nullNotPermitted(source, "source");
-        List result = new ArrayList();
-        for (Object obj: source) {
-            if (obj != null) {
-                if (obj instanceof String) {
-                    result.add(obj);
-                } else {
-                    try {
-                        result.add(ObjectUtils.clone(obj));
-                    } catch (CloneNotSupportedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            } else {
-                result.add(null);
-            }
-        }
-        return result;
-    }
-
+    String generateLabel(FlowDataset dataset, FlowKey key);
+    
 }

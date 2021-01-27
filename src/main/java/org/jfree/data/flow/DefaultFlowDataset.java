@@ -1,3 +1,39 @@
+/* ===========================================================
+ * JFreeChart : a free chart library for the Java(tm) platform
+ * ===========================================================
+ *
+ * (C) Copyright 2000-2021, by Object Refinery Limited and Contributors.
+ *
+ * Project Info:  http://www.jfree.org/jfreechart/index.html
+ *
+ * This library is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+ * USA.
+ *
+ * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
+ * Other names may be trademarks of their respective owners.]
+ *
+ * -----------------------
+ * DefaultFlowDataset.java
+ * -----------------------
+ * (C) Copyright 2021, by Object Refinery Limited and Contributors.
+ *
+ * Original Author:  David Gilbert (for Object Refinery Limited);
+ * Contributor(s):   -;
+ *
+ */
+
 package org.jfree.data.flow;
 
 import java.io.Serializable;
@@ -8,12 +44,14 @@ import java.util.Map;
 import java.util.Objects;
 import org.jfree.chart.plot.flow.FlowUtils;
 import org.jfree.chart.util.PublicCloneable;
+import org.jfree.data.general.AbstractDataset;
 
 /**
  * A dataset representing flows between source and destination nodes.
  * @param <K>
  */
-public class DefaultFlowDataset<K extends Comparable<K>> implements FlowDataset<K>, PublicCloneable, Serializable {
+public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset 
+        implements FlowDataset<K>, PublicCloneable, Serializable {
 
     /** The nodes from source to destination. */
     private List<List<K>> nodes;

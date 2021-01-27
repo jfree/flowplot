@@ -24,10 +24,10 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * --------------
- * FlowUtils.java
- * --------------
- * (C) Copyright 2021, by Object Refinery Limited and Contributors.
+ * ------------------
+ * FlowPlotTests.java
+ * ------------------
+ * (C) Copyright 2021, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
  * Contributor(s):   -;
@@ -36,45 +36,49 @@
 
 package org.jfree.chart.plot.flow;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jfree.chart.util.Args;
-import org.jfree.chart.util.ObjectUtils;
+import org.jfree.chart.TestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
- * Utility methods used by the {@link FlowPlot} class.
+ * Tests for the {@link FlowPlot} class.
  */
-public class FlowUtils {
-    
-    // THE FOLLOWING METHOD IS PART OF THE CloneUtils class in JFreeChart
+public class FlowPlotTests {
 
     /**
-     * Returns a list containing cloned copies of the items in the source
-     * list.
-     * 
-     * @param source  the source list ({@code null} not permitted).
-     * 
-     * @return A new list. 
+     * Confirm that the equals method can distinguish all the required fields.
      */
-    public static List<?> cloneList(List<?> source) {
-        Args.nullNotPermitted(source, "source");
-        List result = new ArrayList();
-        for (Object obj: source) {
-            if (obj != null) {
-                if (obj instanceof String) {
-                    result.add(obj);
-                } else {
-                    try {
-                        result.add(ObjectUtils.clone(obj));
-                    } catch (CloneNotSupportedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            } else {
-                result.add(null);
-            }
-        }
-        return result;
+    @Test
+    public void testEquals() {
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = new FlowPlot(null);
+        assertTrue(p1.equals(p2));
+        assertTrue(p2.equals(p1));
+
+        // test fields one by one TODO
     }
 
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = TestUtils.clone(p1);
+        assertTrue(p1 != p2);
+        assertTrue(p1.getClass() == p2.getClass());
+        assertTrue(p1.equals(p2));
+    }
+
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = TestUtils.serialised(p1);
+        assertEquals(p1, p2);
+    }
+ 
 }

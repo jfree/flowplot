@@ -40,10 +40,17 @@ import java.awt.Shape;
 import org.jfree.chart.entity.ChartEntity;
 
 /**
- *
+ * A chart entity representing the flow between two nodes in a {@link FlowPlot}.
  */
 public class FlowEntity extends ChartEntity {
-    
+
+    /**
+     * Creates a new instance.
+     * 
+     * @param area  the outline of the entity ({@code null} not permitted).
+     * @param toolTipText  the tool tip text.
+     * @param urlText  the URL text.
+     */
     public FlowEntity(Shape area, String toolTipText, String urlText) {
         super(area, toolTipText, urlText);
     }
