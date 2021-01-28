@@ -54,4 +54,5 @@ public class FlowEntity extends ChartEntity {
     public FlowEntity(Shape area, String toolTipText, String urlText) {
         super(area, toolTipText, urlText);
     }
+
 }

@@ -24,9 +24,9 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * ------------------
- * FlowPlotTests.java
- * ------------------
+ * -------------------
+ * FlowEntityTest.java
+ * -------------------
  * (C) Copyright 2021, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -36,39 +36,56 @@
 
 package org.jfree.chart.plot.flow;
 
+import java.awt.Rectangle;
 import org.jfree.chart.TestUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the {@link FlowPlot} class.
+ * Test class for the {@link FlowEntity} class.
  */
-public class FlowPlotTests {
-
+public class FlowEntityTest {
+    
     /**
      * Confirm that the equals method can distinguish all the required fields.
      */
     @Test
     public void testEquals() {
-        FlowPlot p1 = new FlowPlot(null);
-        FlowPlot p2 = new FlowPlot(null);
-        assertTrue(p1.equals(p2));
-        assertTrue(p2.equals(p1));
+        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f2 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        assertTrue(f1.equals(f2));
+        assertTrue(f2.equals(f1));
 
-        // test fields one by one TODO
+        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "tt", "uu");
+        assertFalse(f1.equals(f2));
+        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "tt", "uu");
+        assertTrue(f1.equals(f2));
+  
+        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "uu");
+        assertFalse(f1.equals(f2));
+        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "uu");
+        assertTrue(f1.equals(f2));
+
+        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "UU");
+        assertFalse(f1.equals(f2));
+        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "UU");
+        assertTrue(f1.equals(f2));
     }
 
     /**
      * Confirm that cloning works.
+     * 
+     * @throws CloneNotSupportedException
      */
     @Test
     public void testCloning() throws CloneNotSupportedException {
-        FlowPlot p1 = new FlowPlot(null);
-        FlowPlot p2 = TestUtils.clone(p1);
-        assertTrue(p1 != p2);
-        assertTrue(p1.getClass() == p2.getClass());
-        assertTrue(p1.equals(p2));
+        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f2 = TestUtils.clone(f1);
+        assertTrue(f1 != f2);
+        assertTrue(f1.getClass() == f2.getClass());
+        assertTrue(f1.equals(f2));
     }
 
     /**
@@ -76,9 +93,9 @@ public class FlowPlotTests {
      */
     @Test
     public void testSerialization() {
-        FlowPlot p1 = new FlowPlot(null);
-        FlowPlot p2 = TestUtils.serialised(p1);
-        assertEquals(p1, p2);
+        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f2 = TestUtils.serialised(f1);
+        assertEquals(f1, f2);
     }
  
 }

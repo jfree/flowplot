@@ -24,9 +24,9 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * ----------------
- * NodeKeyTest.java
- * ----------------
+ * ------------------
+ * FlowPlotTests.java
+ * ------------------
  * (C) Copyright 2021, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -34,53 +34,41 @@
  *
  */
 
-package org.jfree.data.flow;
+package org.jfree.chart.plot.flow;
 
 import org.jfree.chart.TestUtils;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests for the {@link NodeKey} class.
+ * Tests for the {@link FlowPlot} class.
  */
-public class NodeKeyTest {
+public class FlowPlotTest {
 
     /**
      * Confirm that the equals method can distinguish all the required fields.
      */
     @Test
     public void testEquals() {
-        NodeKey<String> k1 = new NodeKey<>(0, "A");
-        NodeKey<String> k2 = new NodeKey<>(0, "A");
-        assertTrue(k1.equals(k2));
-        assertTrue(k2.equals(k1));
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = new FlowPlot(null);
+        assertTrue(p1.equals(p2));
+        assertTrue(p2.equals(p1));
 
-        k1 = new NodeKey<>(1, "A");
-        assertFalse(k1.equals(k2));
-        k2 = new NodeKey<>(1, "A");
-        assertTrue(k1.equals(k2));
-  
-        k1 = new NodeKey<>(1, "B");
-        assertFalse(k1.equals(k2));
-        k2 = new NodeKey<>(1, "B");
-        assertTrue(k1.equals(k2));
+        // test fields one by one TODO
     }
 
     /**
      * Confirm that cloning works.
-     * 
-     * @throws CloneNotSupportedException
      */
     @Test
     public void testCloning() throws CloneNotSupportedException {
-        NodeKey<String> k1 = new NodeKey<>(2, "A");
-        NodeKey<String> k2 = TestUtils.clone(k1);
-        assertTrue(k1 != k2);
-        assertTrue(k1.getClass() == k2.getClass());
-        assertTrue(k1.equals(k2));
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = TestUtils.clone(p1);
+        assertTrue(p1 != p2);
+        assertTrue(p1.getClass() == p2.getClass());
+        assertTrue(p1.equals(p2));
     }
 
     /**
@@ -88,9 +76,9 @@ public class NodeKeyTest {
      */
     @Test
     public void testSerialization() {
-        NodeKey<String> k1 = new NodeKey<>(1, "S1");
-        NodeKey<String> k2 = TestUtils.serialised(k1);
-        assertEquals(k1, k2);
+        FlowPlot p1 = new FlowPlot(null);
+        FlowPlot p2 = TestUtils.serialised(p1);
+        assertEquals(p1, p2);
     }
-
+ 
 }
