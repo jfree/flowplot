@@ -146,20 +146,20 @@ public class FlowPlotDemo2 extends JFrame {
         plot.setDefaultNodeLabelPaint(Color.WHITE);
         Color[] colors = createFluoColors();
        
-        plot.setNodeFillColor(new NodeKey(0, "Africa"), colors[0]);
-        plot.setNodeFillColor(new NodeKey(1, "Africa"), colors[0]);
-        plot.setNodeFillColor(new NodeKey(0, "East Asia"), colors[1]);
-        plot.setNodeFillColor(new NodeKey(1, "East Asia"), colors[1]);
-        plot.setNodeFillColor(new NodeKey(0, "Latin America"), colors[2]);
-        plot.setNodeFillColor(new NodeKey(1, "Latin America"), colors[2]);
-        plot.setNodeFillColor(new NodeKey(0, "Europe"), colors[3]);
-        plot.setNodeFillColor(new NodeKey(1, "Europe"), colors[3]);
-        plot.setNodeFillColor(new NodeKey(0, "North America"), colors[4]);
-        plot.setNodeFillColor(new NodeKey(1, "North America"), colors[4]);
-        plot.setNodeFillColor(new NodeKey(0, "Oceania"), colors[5]);
-        plot.setNodeFillColor(new NodeKey(1, "Oceania"), colors[5]);
-        plot.setNodeFillColor(new NodeKey(0, "South Asia"), colors[6]);
-        plot.setNodeFillColor(new NodeKey(1, "South Asia"), colors[6]);
+        plot.setNodeFillColor(new NodeKey<>(0, "Africa"), colors[0]);
+        plot.setNodeFillColor(new NodeKey<>(1, "Africa"), colors[0]);
+        plot.setNodeFillColor(new NodeKey<>(0, "East Asia"), colors[1]);
+        plot.setNodeFillColor(new NodeKey<>(1, "East Asia"), colors[1]);
+        plot.setNodeFillColor(new NodeKey<>(0, "Latin America"), colors[2]);
+        plot.setNodeFillColor(new NodeKey<>(1, "Latin America"), colors[2]);
+        plot.setNodeFillColor(new NodeKey<>(0, "Europe"), colors[3]);
+        plot.setNodeFillColor(new NodeKey<>(1, "Europe"), colors[3]);
+        plot.setNodeFillColor(new NodeKey<>(0, "North America"), colors[4]);
+        plot.setNodeFillColor(new NodeKey<>(1, "North America"), colors[4]);
+        plot.setNodeFillColor(new NodeKey<>(0, "Oceania"), colors[5]);
+        plot.setNodeFillColor(new NodeKey<>(1, "Oceania"), colors[5]);
+        plot.setNodeFillColor(new NodeKey<>(0, "South Asia"), colors[6]);
+        plot.setNodeFillColor(new NodeKey<>(1, "South Asia"), colors[6]);
         JFreeChart chart = new JFreeChart("Migration Patterns", plot);
         return chart;
     }    
