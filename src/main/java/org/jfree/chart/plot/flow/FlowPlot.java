@@ -381,7 +381,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                     Color nc = lookupNodeColor(nodeKey); 
                     GradientPaint gp = new GradientPaint((float) sourceRect.getMaxX(), 0, nc, (float) destRect.getMinX(), 0, new Color(nc.getRed(), nc.getGreen(), nc.getBlue(), 128));
                     Composite saved = g2.getComposite();
-                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f));
                     g2.setPaint(gp);
                     g2.fill(connect);
                     if (entities != null) {

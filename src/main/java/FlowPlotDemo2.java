@@ -44,7 +44,6 @@ import org.jfree.chart.plot.flow.FlowPlot;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
-import org.jfree.data.flow.NodeKey;
 
 /**
  * A flow plot showing migration data from https://www.data-to-viz.com/graph/sankey.html
@@ -118,21 +117,6 @@ public class FlowPlotDemo2 extends JFrame {
         dataset.setFlow(0, "West Asia", "West Asia", 0.927243);
         return dataset;
     }
-
-    public static Color[] createFluoColors() {
-        Color[] result = new Color[10]; 
-        result[0] = new Color(108, 236, 137);
-        result[1] = new Color(253, 187, 46);
-        result[2] = new Color(56, 236, 216);
-        result[3] = new Color(171, 231, 51);
-        result[4] = new Color(221, 214, 74);
-        result[5] = new Color(106, 238, 70);
-        result[6] = new Color(172, 230, 100);
-        result[7] = new Color(242, 191, 82);
-        result[8] = new Color(221, 233, 56);
-        result[9] = new Color(242, 206, 47);
-        return result;
-    }
     
     /**
      * Creates a sample chart.
@@ -145,7 +129,7 @@ public class FlowPlotDemo2 extends JFrame {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
         plot.setDefaultNodeLabelPaint(Color.WHITE);
-        plot.setNodeColorPool(FlowColors.createPurpleWineColors());
+        plot.setNodeColorPool(FlowColors.getSAPMultiColor());
         JFreeChart chart = new JFreeChart("Migration Patterns", plot);
         return chart;
     }    
