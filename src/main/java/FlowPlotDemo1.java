@@ -45,6 +45,9 @@ import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.NodeKey;
 
+/**
+ * Simple demo of a {@link FlowPlot} in JFreeChart.
+ */
 public class FlowPlotDemo1 extends JFrame {
     
     /**
@@ -55,7 +58,7 @@ public class FlowPlotDemo1 extends JFrame {
     public FlowPlotDemo1(String title) {
         super(title);
         JPanel chartPanel = createDemoPanel();
-        chartPanel.setPreferredSize(new java.awt.Dimension(360, 500));
+        chartPanel.setPreferredSize(new java.awt.Dimension(760, 500));
         setContentPane(chartPanel);
     }
 
@@ -67,9 +70,7 @@ public class FlowPlotDemo1 extends JFrame {
     public static JPanel createDemoPanel() {
         FlowDataset dataset = createDataset();
         JFreeChart chart = createChart(dataset);
-        ChartPanel panel = new ChartPanel(chart);
-        panel.setMouseWheelEnabled(true);
-        return panel;
+        return new ChartPanel(chart);
     }
 
     /**
@@ -122,15 +123,15 @@ public class FlowPlotDemo1 extends JFrame {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
         plot.setDefaultNodeLabelPaint(Color.WHITE);
-        Color[] colors = createFluoColors();
+        //Color[] colors = createFluoColors();
        
-        plot.setNodeFillColor(new NodeKey(0, "A"), colors[0]);
-        plot.setNodeFillColor(new NodeKey(0, "B"), colors[1]);
-        plot.setNodeFillColor(new NodeKey(1, "X"), colors[9]);
-        plot.setNodeFillColor(new NodeKey(1, "Y"), colors[3]);
-        plot.setNodeFillColor(new NodeKey(1, "Z"), colors[4]);
-        plot.setNodeFillColor(new NodeKey(2, "D"), colors[5]);
-        plot.setNodeFillColor(new NodeKey(2, "E"), colors[7]);
+//        plot.setNodeFillColor(new NodeKey(0, "A"), colors[0]);
+//        plot.setNodeFillColor(new NodeKey(0, "B"), colors[1]);
+//        plot.setNodeFillColor(new NodeKey(1, "X"), colors[9]);
+//        plot.setNodeFillColor(new NodeKey(1, "Y"), colors[3]);
+//        plot.setNodeFillColor(new NodeKey(1, "Z"), colors[4]);
+//        plot.setNodeFillColor(new NodeKey(2, "D"), colors[5]);
+//        plot.setNodeFillColor(new NodeKey(2, "E"), colors[7]);
         JFreeChart chart = new JFreeChart(title, plot);
         return chart;
     }

@@ -89,6 +89,9 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
 
     private Map<NodeKey, Color> nodeColorMap;
 
+    /** The default node color if nothing is defined in the nodeColorMap. */
+    private Color defaultNodeColor;
+
     private Font defaultNodeLabelFont;
     
     private Paint defaultNodeLabelPaint;
@@ -113,6 +116,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         }
 
         this.nodeColorMap = new HashMap<>();
+        this.defaultNodeColor = Color.GRAY;
         this.defaultNodeLabelFont = new Font(Font.DIALOG, Font.BOLD, 12);
         this.defaultNodeLabelPaint = Color.BLACK;
         this.nodeLabelAlignment = VerticalAlignment.CENTER;
@@ -158,10 +162,39 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         fireChangeEvent();
     }
     
-    protected Color getNodeColor(NodeKey nodeKey) {
+    /**
+     * Returns the default node color.
+     * 
+     * @return The default node color (never {@code null}). 
+     */
+    public Color getDefaultNodeColor() {
+        return this.defaultNodeColor;
+    }
+    
+    /**
+     * Sets the default node color and sends a change event to registered
+     * listeners.
+     * 
+     * @param color  the color ({@code null} not permitted). 
+     */
+    public void setDefaultNodeColor(Color color) {
+        Args.nullNotPermitted(color, "color");
+        this.defaultNodeColor = color;
+        fireChangeEvent();
+    }
+
+    /**
+     * Performs a lookup on the color for the specified node.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * 
+     * @return The node color. 
+     */
+    protected Color lookupNodeColor(NodeKey nodeKey) {
         Color result = this.nodeColorMap.get(nodeKey);
         if (result == null) {
-            result = Color.LIGHT_GRAY;
+            // we can either auto-populate the color or return the default
+            result = this.defaultNodeColor;
         }
         return result;
     }
@@ -252,7 +285,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                 double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
                 Rectangle2D nodeRect = new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight);
                 if (entities != null) {
-                    entities.add(new ChartEntity(nodeRect, source.toString()));                
+                    entities.add(new NodeEntity(nodeRect, source.toString()));                
                 }
                 nodeRects.put(new NodeKey(stage, source), nodeRect);
                 double y = nodeY;
@@ -270,7 +303,6 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
             }
             
             // calculate the destination rectangles
-            //Map<Comparable, Rectangle2D> destNodeRects = new HashMap<>();
             Map<FlowKey, Rectangle2D> destFlowRects = new HashMap<>();
             nodeY = area.getY();
             for (Object d : this.dataset.getDestinations(stage)) {
@@ -297,7 +329,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                 Comparable source = (Comparable) s;
                 NodeKey nodeKey = new NodeKey(stage, source);
                 Rectangle2D nodeRect = nodeRects.get(nodeKey);
-                g2.setPaint(getNodeColor(nodeKey));
+                g2.setPaint(lookupNodeColor(nodeKey));
                 g2.fill(nodeRect);
                                 
                 for (Object d : this.dataset.getDestinations(stage)) {
@@ -315,7 +347,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                     connect.lineTo(destRect.getX() - flowOffset, destRect.getMaxY());
                     connect.curveTo(stageLeft + stageWidth / 2.0, destRect.getMaxY(), stageLeft + stageWidth / 2.0, sourceRect.getMaxY(), sourceRect.getMaxX() + flowOffset, sourceRect.getMaxY());
                     connect.closePath();
-                    Color nc = getNodeColor(nodeKey); 
+                    Color nc = lookupNodeColor(nodeKey); 
                     GradientPaint gp = new GradientPaint((float) sourceRect.getMaxX(), 0, nc, (float) destRect.getMinX(), 0, new Color(nc.getRed(), nc.getGreen(), nc.getBlue(), 128));
                     Composite saved = g2.getComposite();
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
@@ -337,7 +369,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
             NodeKey nodeKey = new NodeKey(lastStage + 1, destination);
             Rectangle2D nodeRect = nodeRects.get(nodeKey);
             if (nodeRect != null) {
-                g2.setPaint(getNodeColor(nodeKey));
+                g2.setPaint(lookupNodeColor(nodeKey));
                 g2.fill(nodeRect);
                 if (entities != null) {
                     entities.add(new ChartEntity(nodeRect, destination.toString()));                
