@@ -39,11 +39,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.flow.FlowColors;
 import org.jfree.chart.plot.flow.FlowPlot;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
-import org.jfree.data.flow.NodeKey;
 
 /**
  * Simple demo of a {@link FlowPlot} in JFreeChart.
@@ -122,16 +122,8 @@ public class FlowPlotDemo1 extends JFrame {
     static final JFreeChart createFlowPlot(String title, FlowDataset dataset) {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
-        plot.setDefaultNodeLabelPaint(Color.WHITE);
-        //Color[] colors = createFluoColors();
-       
-//        plot.setNodeFillColor(new NodeKey(0, "A"), colors[0]);
-//        plot.setNodeFillColor(new NodeKey(0, "B"), colors[1]);
-//        plot.setNodeFillColor(new NodeKey(1, "X"), colors[9]);
-//        plot.setNodeFillColor(new NodeKey(1, "Y"), colors[3]);
-//        plot.setNodeFillColor(new NodeKey(1, "Z"), colors[4]);
-//        plot.setNodeFillColor(new NodeKey(2, "D"), colors[5]);
-//        plot.setNodeFillColor(new NodeKey(2, "E"), colors[7]);
+        plot.setNodeColorPool(FlowColors.createGreenMintColors());
+        //plot.setDefaultNodeLabelPaint(Color.WHITE);
         JFreeChart chart = new JFreeChart(title, plot);
         return chart;
     }
@@ -156,6 +148,7 @@ public class FlowPlotDemo1 extends JFrame {
      */
     public static void main(String[] args) {
         FlowPlotDemo1 demo = new FlowPlotDemo1("JFreeChart: FlowPlotDemo.java");
+        demo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         demo.pack();
         UIUtils.centerFrameOnScreen(demo);
         demo.setVisible(true);

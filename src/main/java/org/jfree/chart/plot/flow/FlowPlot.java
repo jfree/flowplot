@@ -88,6 +88,12 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
     private double nodeMargin = 0.01;
 
     private Map<NodeKey, Color> nodeColorMap;
+    
+    private boolean autoPopulateNodeColors = true;
+    
+    private Color[] nodeColorPool = FlowColors.createBlueOceanColors();
+    
+    private int nodeColorPoolPointer = 0;
 
     /** The default node color if nothing is defined in the nodeColorMap. */
     private Color defaultNodeColor;
@@ -162,6 +168,11 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         fireChangeEvent();
     }
     
+    public void setNodeColorPool(Color[] pool) {
+        Args.nullNotPermitted(pool, "pool");
+        this.nodeColorPool = pool;
+    }
+    
     /**
      * Returns the default node color.
      * 
@@ -194,7 +205,27 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         Color result = this.nodeColorMap.get(nodeKey);
         if (result == null) {
             // we can either auto-populate the color or return the default
-            result = this.defaultNodeColor;
+            if (this.autoPopulateNodeColors) {
+                for (int s = 0; s < nodeKey.getStage(); s++) {
+                    for (Object key : dataset.getSources(s)) {
+                        if (nodeKey.getNode().equals(key)) {
+                            Color color = this.nodeColorMap.get(new NodeKey(s, (Comparable) key));
+                            setNodeFillColor(nodeKey, color);
+                            return color;
+                        }
+                    }
+                }
+                
+                int index = this.nodeColorPoolPointer + 1;
+                if (index >= this.nodeColorPool.length) { 
+                    index = 0;
+                }
+                setNodeFillColor(nodeKey, nodeColorPool[index]);
+                this.nodeColorPoolPointer = index;
+                return nodeColorPool[index];
+            } else {
+                result = this.defaultNodeColor;
+            }
         }
         return result;
     }
