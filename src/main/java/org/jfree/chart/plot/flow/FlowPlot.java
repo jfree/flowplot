@@ -301,6 +301,27 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
     }
 
     /**
+     * Returns the vertical alignment of the node labels relative to the node.
+     * 
+     * @return The alignment (never {@code null}). 
+     */
+    public VerticalAlignment getNodeLabelAlignment() {
+        return this.nodeLabelAlignment;
+    }
+    
+    /**
+     * Sets the alignment of the node labels and sends a change notification
+     * to all registered listeners.
+     * 
+     * @param alignment  the new alignment ({@code null} not permitted). 
+     */
+    public void setNodeLabelAlignment(VerticalAlignment alignment) {
+        Args.nullNotPermitted(alignment, "alignment");
+        this.nodeLabelAlignment = alignment;
+        fireChangeEvent();
+    }
+    
+    /**
      * Returns the x-offset for the node labels.
      * 
      * @return The x-offset for the node labels.
@@ -605,7 +626,8 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
     }
     
     /**
-     * Tests this plot for equality with an arbitrary object. 
+     * Tests this plot for equality with an arbitrary object.  Note that, for 
+     * the purposes of this equality test, the dataset is ignored.
      * 
      * @param obj  the object ({@code null} permitted).
      * 
@@ -635,6 +657,9 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
             return false;
         }
         if (this.nodeLabelOffsetY != that.nodeLabelOffsetY) {
+            return false;
+        }
+        if (this.nodeLabelAlignment != that.nodeLabelAlignment) {
             return false;
         }
         if (!Objects.equals(this.toolTipGenerator, that.toolTipGenerator)) {

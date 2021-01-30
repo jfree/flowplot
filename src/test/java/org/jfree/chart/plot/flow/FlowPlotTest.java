@@ -42,6 +42,7 @@ import org.jfree.chart.TestUtils;
 import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.chart.plot.flow.labels.StandardFlowLabelGenerator;
+import org.jfree.chart.ui.VerticalAlignment;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -110,6 +111,15 @@ public class FlowPlotTest implements PlotChangeListener {
     }
 
     @Test
+    public void setNodeLabelAlignmentTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setNodeLabelAlignment(VerticalAlignment.CENTER);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
     public void setFlowMarginTriggersChangeEvent() {
         this.lastEvent = null;
         FlowPlot p1 = new FlowPlot(null);
@@ -171,6 +181,11 @@ public class FlowPlotTest implements PlotChangeListener {
         p1.setNodeWidth(9.0);
         assertFalse(p1.equals(p2));
         p2.setNodeWidth(9.0);
+        assertTrue(p1.equals(p1));
+        
+        p1.setNodeLabelAlignment(VerticalAlignment.BOTTOM);
+        assertFalse(p1.equals(p2));
+        p2.setNodeLabelAlignment(VerticalAlignment.BOTTOM);
         assertTrue(p1.equals(p1));
         
         p1.setToolTipGenerator(null);
