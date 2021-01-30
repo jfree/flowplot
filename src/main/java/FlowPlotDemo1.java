@@ -122,7 +122,7 @@ public class FlowPlotDemo1 extends JFrame {
     static final JFreeChart createFlowPlot(String title, FlowDataset dataset) {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
-        plot.setNodeColorPool(FlowColors.createGreenMintColors());
+        plot.setNodeColorSwatch(FlowColors.createGreenMintColors());
         //plot.setDefaultNodeLabelPaint(Color.WHITE);
         JFreeChart chart = new JFreeChart(title, plot);
         return chart;

@@ -129,7 +129,7 @@ public class FlowPlotDemo2 extends JFrame {
         FlowPlot plot = new FlowPlot(dataset);
         plot.setBackgroundPaint(Color.BLACK);
         plot.setDefaultNodeLabelPaint(Color.WHITE);
-        plot.setNodeColorPool(FlowColors.getSAPMultiColor());
+        plot.setNodeColorSwatch(FlowColors.getSAPMultiColor());
         JFreeChart chart = new JFreeChart("Migration Patterns", plot);
         return chart;
     }    

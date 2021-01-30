@@ -36,15 +36,96 @@
 
 package org.jfree.chart.plot.flow;
 
+import java.awt.Color;
+import java.awt.Font;
 import org.jfree.chart.TestUtils;
+import org.jfree.chart.event.PlotChangeEvent;
+import org.jfree.chart.event.PlotChangeListener;
+import org.jfree.chart.plot.flow.labels.StandardFlowLabelGenerator;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the {@link FlowPlot} class.
  */
-public class FlowPlotTest {
+public class FlowPlotTest implements PlotChangeListener {
+
+    private PlotChangeEvent lastEvent = null;
+
+    /**
+     * Receives notification of a plot change event.
+     *
+     * @param event  the event.
+     */
+    public void plotChanged(PlotChangeEvent event) {
+        this.lastEvent = event;        
+    }
+    
+    @Test
+    public void setDefaultNodeColorTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setDefaultNodeColor(Color.GREEN);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
+    public void setDefaultNodeLabelFontTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setDefaultNodeLabelFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
+    public void setDefaultNodeLabelPaintTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setDefaultNodeLabelPaint(Color.RED);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
+    public void setDefaultNodeLabelOffsetXTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setNodeLabelOffsetX(12.3);
+        assertNotNull(this.lastEvent);
+    }
+    
+    @Test
+    public void setDefaultNodeLabelOffsetYTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setNodeLabelOffsetY(12.4);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
+    public void setFlowMarginTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setFlowMargin(0.1);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
+    public void setToolTipGeneratorTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setToolTipGenerator(null);
+        assertNotNull(this.lastEvent);
+    }
 
     /**
      * Confirm that the equals method can distinguish all the required fields.
@@ -56,7 +137,51 @@ public class FlowPlotTest {
         assertTrue(p1.equals(p2));
         assertTrue(p2.equals(p1));
 
-        // test fields one by one TODO
+        // test fields one by one 
+        p1.setFlowMargin(0.01);
+        assertFalse(p1.equals(p2));
+        p2.setFlowMargin(0.01);
+        assertTrue(p1.equals(p1));
+        
+        p1.setDefaultNodeColor(Color.GREEN);
+        assertFalse(p1.equals(p2));
+        p2.setDefaultNodeColor(Color.GREEN);
+        assertTrue(p1.equals(p1));
+        
+        p1.setDefaultNodeLabelFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+        assertFalse(p1.equals(p2));
+        p2.setDefaultNodeLabelFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+        assertTrue(p1.equals(p1));
+        
+        p1.setDefaultNodeLabelPaint(Color.WHITE);
+        assertFalse(p1.equals(p2));
+        p2.setDefaultNodeLabelPaint(Color.WHITE);
+        assertTrue(p1.equals(p1));
+        
+        p1.setNodeLabelOffsetX(99.0);
+        assertFalse(p1.equals(p2));
+        p2.setNodeLabelOffsetX(99.0);
+        assertTrue(p1.equals(p1));
+        
+        p1.setNodeLabelOffsetY(88.0);
+        assertFalse(p1.equals(p2));
+        p2.setNodeLabelOffsetY(88.0);
+        assertTrue(p1.equals(p1));
+
+        p1.setNodeWidth(9.0);
+        assertFalse(p1.equals(p2));
+        p2.setNodeWidth(9.0);
+        assertTrue(p1.equals(p1));
+        
+        p1.setToolTipGenerator(null);
+        assertFalse(p1.equals(p2));
+        p2.setToolTipGenerator(null);
+        assertTrue(p1.equals(p2));
+        
+        p1.setToolTipGenerator(new StandardFlowLabelGenerator("%4$,.0f"));
+        assertFalse(p1.equals(p2));
+        p2.setToolTipGenerator(new StandardFlowLabelGenerator("%4$,.0f"));
+        assertTrue(p1.equals(p2));
     }
 
     /**

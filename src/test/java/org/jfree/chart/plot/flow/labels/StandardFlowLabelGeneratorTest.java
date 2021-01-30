@@ -24,10 +24,10 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * ------------------------------
- * DefaultFlowLabelGenerator.java
- * ------------------------------
- * (C) Copyright 2021, by Object Refinery Limited and Contributors.
+ * -----------------------------------
+ * StandardFlowLabelGeneratorTest.java
+ * -----------------------------------
+ * (C) Copyright 2021, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
  * Contributor(s):   -;
@@ -36,33 +36,35 @@
 
 package org.jfree.chart.plot.flow.labels;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import org.jfree.chart.util.PublicCloneable;
-import org.jfree.data.flow.FlowDataset;
-import org.jfree.data.flow.FlowKey;
+import org.jfree.chart.TestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
- * Standard flow label generator.
+ * Tests for the {@link StandardFlowLabelGenerator} class.
  */
-public class DefaultFlowLabelGenerator implements FlowLabelGenerator, Cloneable, PublicCloneable, Serializable {
+public class StandardFlowLabelGeneratorTest {
     
-    private NumberFormat formatter;
-    
-    public DefaultFlowLabelGenerator() {
-        this.formatter = new DecimalFormat("0.00");    
+    /**
+     * Confirm that the equals method can distinguish all the required fields.
+     */
+    @Test
+    public void testEquals() {
+        StandardFlowLabelGenerator g1 = new StandardFlowLabelGenerator();
+        StandardFlowLabelGenerator g2 = new StandardFlowLabelGenerator();
+        assertTrue(g1.equals(g2));
+        assertTrue(g2.equals(g1));
     }
 
-    @Override
-    public String generateLabel(FlowDataset dataset, FlowKey key) {
-        Number n = dataset.getFlow(key.getStage(), key.getSource(), key.getDestination());
-        String nStr = this.formatter.format(n);
-        return key.getSource().toString() + " -> " + key.getDestination().toString() + " = " + nStr;
+    /**
+     * Serialize an instance, restore it, and check for equality.
+     */
+    @Test
+    public void testSerialization() {
+        StandardFlowLabelGenerator g1 = new StandardFlowLabelGenerator();
+        StandardFlowLabelGenerator g2 = TestUtils.serialised(g1);
+        assertEquals(g1, g2);
     }
-    
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
+   
 }

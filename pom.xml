@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
  
     <groupId>org.jfree</groupId>
-    <artifactId>sankey</artifactId>
+    <artifactId>flowplot</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>Sankey Plot</name>
+    <name>Flow Plot</name>
     <url>https://jfree.org</url>
  
     <description>
@@ -26,6 +26,12 @@
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.2</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <version>3.4</version>
         </dependency>
         
         <!-- test dependencies -->
