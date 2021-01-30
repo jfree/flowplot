@@ -11,6 +11,7 @@ Overview
 This repository contains work-in-progress for a new `FlowPlot` class that will
 most likely be added to a future release of JFreeChart.
 
+![FlowPlotDemo2.svg](http://www.jfree.org/jfreechart/images/FlowPlotDemo2.svg)
 
 Maven
 -----

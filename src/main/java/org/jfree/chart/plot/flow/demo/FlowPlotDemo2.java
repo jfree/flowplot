@@ -24,15 +24,16 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * -----------------
- * FlowPlotDemo.java
- * -----------------
+ * ------------------
+ * FlowPlotDemo2.java
+ * ------------------
  * (C) Copyright 2021, by Object Refinery Limited and Contributors.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
  * Contributor(s):   -;
  *
  */
+package org.jfree.chart.plot.flow.demo;
 
 import java.awt.Color;
 import javax.swing.JFrame;
@@ -46,16 +47,16 @@ import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
 
 /**
- * Simple demo of a {@link FlowPlot} in JFreeChart.
+ * A flow plot showing migration data from https://www.data-to-viz.com/graph/sankey.html
  */
-public class FlowPlotDemo1 extends JFrame {
+public class FlowPlotDemo2 extends JFrame {
     
     /**
      * Creates a new demo application.
      *
      * @param title  the frame title.
      */
-    public FlowPlotDemo1(String title) {
+    public FlowPlotDemo2(String title) {
         super(title);
         JPanel chartPanel = createDemoPanel();
         chartPanel.setPreferredSize(new java.awt.Dimension(760, 500));
@@ -70,62 +71,52 @@ public class FlowPlotDemo1 extends JFrame {
     public static JPanel createDemoPanel() {
         FlowDataset dataset = createDataset();
         JFreeChart chart = createChart(dataset);
-        return new ChartPanel(chart);
+        ChartPanel panel = new ChartPanel(chart);
+        return panel;
     }
 
     /**
-     * Creates a dataset.
+     * Creates a dataset (source https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/13_AdjacencyDirectedWeighted.csv).
      *
      * @return a dataset.
      */
     private static FlowDataset createDataset() {
         DefaultFlowDataset<String> dataset = new DefaultFlowDataset<>();
-        dataset.setFlow(0, "A", "X", 5.0);
-        dataset.setFlow(0, "A", "Y", 2.0);
-        dataset.setFlow(0, "A", "Z", 1.0);
-        dataset.setFlow(0, "B", "X", 2.0);
-        dataset.setFlow(0, "B", "Y", 2.0);
-        dataset.setFlow(0, "B", "Z", 2.0);
-        
-        //dataset.setFlow(1, "W", "D", 6);
-        dataset.setFlow(1, "X", "D", 3);
-        dataset.setFlow(1, "X", "E", 4);
-        dataset.setFlow(1, "Y", "D", 5);
-        dataset.setFlow(1, "Y", "E", 3);
-        dataset.setFlow(1, "Z", "D", 2);
-        dataset.setFlow(1, "Z", "E", 1);
-
-        dataset.setFlow(2, "D", "H", 3);
-        dataset.setFlow(2, "D", "I", 3);
-        dataset.setFlow(2, "D", "J", 0);
-        dataset.setFlow(2, "E", "H", 3);
-        dataset.setFlow(2, "E", "I", 2);
-        dataset.setFlow(2, "E", "J", 3);
+        dataset.setFlow(0, "Africa", "Africa", 3.142471);
+        dataset.setFlow(0, "Africa", "Europe", 2.107883);
+        dataset.setFlow(0, "Africa", "North America", 0.540887);
+        dataset.setFlow(0, "Africa", "West Asia", 0.673004);
+        dataset.setFlow(0, "East Asia", "East Asia", 1.630997);
+        dataset.setFlow(0, "East Asia", "Europe", 0.601265);
+        dataset.setFlow(0, "East Asia", "North America", 0.97306);
+        dataset.setFlow(0, "East Asia", "Oceania", 0.333608);
+        dataset.setFlow(0, "East Asia", "South East Asia", 0.380388);
+        dataset.setFlow(0, "East Asia", "West Asia", 0.869311);
+        dataset.setFlow(0, "Europe", "Europe", 2.401476);
+        dataset.setFlow(0, "Latin America", "Europe", 1.762587);
+        dataset.setFlow(0, "Latin America", "Latin America", 0.879198);
+        dataset.setFlow(0, "Latin America", "North America", 3.627847);
+        dataset.setFlow(0, "North America", "Europe", 1.215929);
+        dataset.setFlow(0, "North America", "North America", 0.276908);
+        dataset.setFlow(0, "Oceania", "Europe", 0.17037);
+        dataset.setFlow(0, "Oceania", "Oceania", 0.190706);
+        dataset.setFlow(0, "South East Asia", "East Asia", 0.525881);
+        dataset.setFlow(0, "South Asia", "Europe", 1.390272);
+        dataset.setFlow(0, "South Asia", "North America", 1.508008);
+        dataset.setFlow(0, "South Asia", "Oceania", 0.34742);
+        dataset.setFlow(0, "South Asia", "South Asia", 1.307907);
+        dataset.setFlow(0, "South Asia", "West Asia", 4.902081);
+        dataset.setFlow(0, "South East Asia", "East Asia", 0.145264);
+        dataset.setFlow(0, "South East Asia", "Europe", 0.468762);
+        dataset.setFlow(0, "South East Asia", "North America", 1.057904);
+        dataset.setFlow(0, "South East Asia", "Oceania", 0.278746);
+        dataset.setFlow(0, "South East Asia", "South East Asia", 0.781316);
+        dataset.setFlow(0, "Soviet Union", "Europe", 0.60923);
+        dataset.setFlow(0, "Soviet Union", "Soviet Union", 1.870501);
+        dataset.setFlow(0, "West Asia", "Europe", 0.449623);
+        dataset.setFlow(0, "West Asia", "North America", 0.169274);
+        dataset.setFlow(0, "West Asia", "West Asia", 0.927243);
         return dataset;
-    }
-
-    public static Color[] createFluoColors() {
-        Color[] result = new Color[10]; 
-        result[0] = new Color(108, 236, 137);
-        result[1] = new Color(253, 187, 46);
-        result[2] = new Color(56, 236, 216);
-        result[3] = new Color(171, 231, 51);
-        result[4] = new Color(221, 214, 74);
-        result[5] = new Color(106, 238, 70);
-        result[6] = new Color(172, 230, 100);
-        result[7] = new Color(242, 191, 82);
-        result[8] = new Color(221, 233, 56);
-        result[9] = new Color(242, 206, 47);
-        return result;
-    }
-   
-    static final JFreeChart createFlowPlot(String title, FlowDataset dataset) {
-        FlowPlot plot = new FlowPlot(dataset);
-        plot.setBackgroundPaint(Color.BLACK);
-        plot.setNodeColorSwatch(FlowColors.createGreenMintColors());
-        //plot.setDefaultNodeLabelPaint(Color.WHITE);
-        JFreeChart chart = new JFreeChart(title, plot);
-        return chart;
     }
     
     /**
@@ -136,7 +127,11 @@ public class FlowPlotDemo1 extends JFrame {
      * @return A sample chart.
      */
     private static JFreeChart createChart(FlowDataset dataset) {
-        JFreeChart chart = createFlowPlot("Flow Plot", dataset);
+        FlowPlot plot = new FlowPlot(dataset);
+        plot.setBackgroundPaint(Color.BLACK);
+        plot.setDefaultNodeLabelPaint(Color.WHITE);
+        plot.setNodeColorSwatch(FlowColors.getSAPMultiColor());
+        JFreeChart chart = new JFreeChart("Migration Patterns", plot);
         return chart;
     }    
     
@@ -147,7 +142,7 @@ public class FlowPlotDemo1 extends JFrame {
      * @param args  ignored.
      */
     public static void main(String[] args) {
-        FlowPlotDemo1 demo = new FlowPlotDemo1("JFreeChart: FlowPlotDemo.java");
+        FlowPlotDemo2 demo = new FlowPlotDemo2("JFreeChart: FlowPlotDemo2.java");
         demo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         demo.pack();
         UIUtils.centerFrameOnScreen(demo);
