@@ -38,6 +38,7 @@ package org.jfree.chart.plot.flow;
 
 import java.awt.Rectangle;
 import org.jfree.chart.TestUtils;
+import org.jfree.data.flow.FlowKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,24 +54,29 @@ public class FlowEntityTest {
      */
     @Test
     public void testEquals() {
-        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
-        FlowEntity f2 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f1 = new FlowEntity(new FlowKey(0, "A", "B"), new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f2 = new FlowEntity(new FlowKey(0, "A", "B"), new Rectangle(0, 1, 2, 3), "tt", "uu");
         assertTrue(f1.equals(f2));
         assertTrue(f2.equals(f1));
 
-        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "tt", "uu");
+        f1 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(0, 1, 2, 3), "tt", "uu");
         assertFalse(f1.equals(f2));
-        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "tt", "uu");
-        assertTrue(f1.equals(f2));
-  
-        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "uu");
-        assertFalse(f1.equals(f2));
-        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "uu");
+        f2 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(0, 1, 2, 3), "tt", "uu");
         assertTrue(f1.equals(f2));
 
-        f1 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "UU");
+        f1 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "tt", "uu");
         assertFalse(f1.equals(f2));
-        f2 = new FlowEntity(new Rectangle(4, 1, 2, 3), "TT", "UU");
+        f2 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "tt", "uu");
+        assertTrue(f1.equals(f2));
+  
+        f1 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "TT", "uu");
+        assertFalse(f1.equals(f2));
+        f2 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "TT", "uu");
+        assertTrue(f1.equals(f2));
+
+        f1 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "TT", "UU");
+        assertFalse(f1.equals(f2));
+        f2 = new FlowEntity(new FlowKey(0, "A", "C"), new Rectangle(4, 1, 2, 3), "TT", "UU");
         assertTrue(f1.equals(f2));
     }
 
@@ -81,7 +87,7 @@ public class FlowEntityTest {
      */
     @Test
     public void testCloning() throws CloneNotSupportedException {
-        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f1 = new FlowEntity(new FlowKey(0, "A", "B"), new Rectangle(0, 1, 2, 3), "tt", "uu");
         FlowEntity f2 = TestUtils.clone(f1);
         assertTrue(f1 != f2);
         assertTrue(f1.getClass() == f2.getClass());
@@ -93,7 +99,7 @@ public class FlowEntityTest {
      */
     @Test
     public void testSerialization() {
-        FlowEntity f1 = new FlowEntity(new Rectangle(0, 1, 2, 3), "tt", "uu");
+        FlowEntity f1 = new FlowEntity(new FlowKey(0, "A", "B"), new Rectangle(0, 1, 2, 3), "tt", "uu");
         FlowEntity f2 = TestUtils.serialised(f1);
         assertEquals(f1, f2);
     }

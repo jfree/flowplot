@@ -38,20 +38,28 @@ package org.jfree.chart.plot.flow;
 
 import java.awt.Shape;
 import org.jfree.chart.entity.ChartEntity;
+import org.jfree.data.flow.NodeKey;
 
 /**
  * A chart entity representing a node in a {@link FlowPlot}.
  */
 public class NodeEntity extends ChartEntity {
 
+    private NodeKey key;
+    
     /**
      * Creates a new instance.
      * 
      * @param area  the outline of the entity ({@code null} not permitted).
      * @param toolTipText  the tool tip text.
      */
-    public NodeEntity(Shape area, String toolTipText) {
+    public NodeEntity(NodeKey key, Shape area, String toolTipText) {
         super(area, toolTipText);
+        this.key = key;
+    }
+    
+    public NodeKey getKey() {
+        return this.key;
     }
 
     /**

@@ -38,12 +38,15 @@ package org.jfree.chart.plot.flow;
 
 import java.awt.Shape;
 import org.jfree.chart.entity.ChartEntity;
+import org.jfree.data.flow.FlowKey;
 
 /**
  * A chart entity representing the flow between two nodes in a {@link FlowPlot}.
  */
 public class FlowEntity extends ChartEntity {
 
+    private FlowKey key;
+    
     /**
      * Creates a new instance.
      * 
@@ -51,8 +54,47 @@ public class FlowEntity extends ChartEntity {
      * @param toolTipText  the tool tip text.
      * @param urlText  the URL text.
      */
-    public FlowEntity(Shape area, String toolTipText, String urlText) {
+    public FlowEntity(FlowKey key, Shape area, String toolTipText, String urlText) {
         super(area, toolTipText, urlText);
+        this.key = key;
+    }
+    
+    /**
+     * Returns the key identifying the flow.
+     * 
+     * @return The flow key (never {@code null}). 
+     */
+    public FlowKey getKey() {
+        return this.key;
     }
 
+    /**
+     * Returns a string representation of this instance, primarily for 
+     * debugging purposes.
+     * 
+     * @return A string. 
+     */
+    @Override
+    public String toString() {
+        return "[FlowEntity: " + this.key + "]";
+    }
+
+    /**
+     * Tests this instance for equality with an arbitrary object.
+     * 
+     * @param obj  the object ({@code null} permitted).
+     * 
+     * @return A boolean. 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FlowEntity)) {
+            return false;
+        }
+        FlowEntity that = (FlowEntity) obj;
+        if (!this.key.equals(that.key)) {
+            return false;
+        }
+        return super.equals(obj);
+    }
 }

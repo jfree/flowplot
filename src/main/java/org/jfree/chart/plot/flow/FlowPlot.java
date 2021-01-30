@@ -487,7 +487,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                 double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
                 Rectangle2D nodeRect = new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight);
                 if (entities != null) {
-                    entities.add(new NodeEntity(nodeRect, source.toString()));                
+                    entities.add(new NodeEntity(new NodeKey(stage, source), nodeRect, source.toString()));                
                 }
                 nodeRects.put(new NodeKey(stage, source), nodeRect);
                 double y = nodeY;
@@ -560,7 +560,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                         if (this.toolTipGenerator != null) {
                             toolTip = this.toolTipGenerator.generateLabel(this.dataset, flowKey);
                         }
-                        entities.add(new FlowEntity(connect, toolTip, ""));                
+                        entities.add(new FlowEntity(flowKey, connect, toolTip, ""));                
                     }
                     g2.setComposite(saved);
                 }
@@ -578,7 +578,7 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                 g2.setPaint(lookupNodeColor(nodeKey));
                 g2.fill(nodeRect);
                 if (entities != null) {
-                    entities.add(new ChartEntity(nodeRect, destination.toString()));                
+                    entities.add(new NodeEntity(new NodeKey(lastStage + 1, destination), nodeRect, destination.toString()));                
                 }
             }
         }
