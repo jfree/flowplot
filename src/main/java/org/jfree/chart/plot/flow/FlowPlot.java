@@ -129,8 +129,8 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         if (dataset != null) {
             dataset.addChangeListener(this);
         }
-
         this.nodeColorMap = new HashMap<>();
+        this.nodeColorSwatch = new ArrayList<>();
         this.defaultNodeColor = Color.GRAY;
         this.defaultNodeLabelFont = new Font(Font.DIALOG, Font.BOLD, 12);
         this.defaultNodeLabelPaint = Color.BLACK;
@@ -139,16 +139,32 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         this.nodeLabelOffsetY = 2.0;
         this.toolTipGenerator = new StandardFlowLabelGenerator();
     }
-    
+
+    /**
+     * Returns a string identifying the plot type.
+     * 
+     * @return 
+     */
     @Override
     public String getPlotType() {
         return "FlowPlot";
     }
-    
+
+    /**
+     * Returns a reference to the dataset.
+     * 
+     * @return A reference to the dataset (possibly {@code null}). 
+     */
     public FlowDataset getDataset() {
         return this.dataset;
     }
-    
+
+    /**
+     * Sets the dataset for the plot and sends a change notification to all
+     * registered listeners.
+     * 
+     * @param dataset  the dataset ({@code null} permitted). 
+     */
     public void setDataset(FlowDataset dataset) {
         this.dataset = dataset;
         fireChangeEvent();
@@ -203,7 +219,8 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
      * Returns the list of colors that will be used to auto-populate the node
      * colors when they are first rendered.  If the list is empty, no color 
      * will be assigned to the node so, unless it is manually set, the default
-     * color will apply.
+     * color will apply.  This method returns a copy of the list, modifying
+     * the returned list will not affect the plot.
      * 
      * @return The list of colors (possibly empty, but never {@code null}). 
      */
@@ -222,10 +239,24 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         
     }
     
+    /**
+     * Returns the fill color for the specified node.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * 
+     * @return The fill color (possibly {@code null}).
+     */
     public Color getNodeFillColor(NodeKey nodeKey) {
         return this.nodeColorMap.get(nodeKey);
     }
     
+    /**
+     * Sets the fill color for the specified node and sends a change 
+     * notification to all registered listeners.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * @param color  the fill color ({@code null} permitted).
+     */
     public void setNodeFillColor(NodeKey nodeKey, Color color) {
         this.nodeColorMap.put(nodeKey, color);
         fireChangeEvent();
@@ -641,6 +672,12 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         if (!this.defaultNodeColor.equals(that.defaultNodeColor)) {
             return false;
         }
+        if (!this.nodeColorMap.equals(that.nodeColorMap)) {
+            return false;
+        }
+        if (!this.nodeColorSwatch.equals(that.nodeColorSwatch)) {
+            return false;
+        }
         if (!this.defaultNodeLabelFont.equals(that.defaultNodeLabelFont)) {
             return false;
         }
@@ -667,4 +704,12 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         }
         return true;
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        FlowPlot clone = (FlowPlot) super.clone();
+        clone.nodeColorMap = new HashMap<>(this.nodeColorMap);
+        return clone;
+    }
+
 }

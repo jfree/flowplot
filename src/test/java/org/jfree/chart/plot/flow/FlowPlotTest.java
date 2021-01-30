@@ -43,6 +43,7 @@ import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.chart.plot.flow.labels.StandardFlowLabelGenerator;
 import org.jfree.chart.ui.VerticalAlignment;
+import org.jfree.data.flow.NodeKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -120,6 +121,15 @@ public class FlowPlotTest implements PlotChangeListener {
     }
 
     @Test
+    public void setNodeFillColorTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
     public void setFlowMarginTriggersChangeEvent() {
         this.lastEvent = null;
         FlowPlot p1 = new FlowPlot(null);
@@ -147,6 +157,26 @@ public class FlowPlotTest implements PlotChangeListener {
         assertTrue(p1.equals(p2));
         assertTrue(p2.equals(p1));
 
+        // test fields one by one - the independence checker does this
+        testIndependence(p1, p2);
+    }
+
+    /**
+     * Confirm that cloning works.
+     */
+    @Test
+    public void testCloning() throws CloneNotSupportedException {
+        FlowPlot p1 = new FlowPlot(null);
+        p1.setNodeFillColor(new NodeKey(0, "A"), Color.BLUE);
+        FlowPlot p2 = TestUtils.clone(p1);
+        assertTrue(p1 != p2);
+        assertTrue(p1.getClass() == p2.getClass());
+        assertTrue(p1.equals(p2));
+        
+        testIndependence(p1, p2);
+    }
+    
+    private void testIndependence(FlowPlot p1, FlowPlot p2) {
         // test fields one by one 
         p1.setFlowMargin(0.01);
         assertFalse(p1.equals(p2));
@@ -197,17 +227,15 @@ public class FlowPlotTest implements PlotChangeListener {
         assertFalse(p1.equals(p2));
         p2.setToolTipGenerator(new StandardFlowLabelGenerator("%4$,.0f"));
         assertTrue(p1.equals(p2));
-    }
-
-    /**
-     * Confirm that cloning works.
-     */
-    @Test
-    public void testCloning() throws CloneNotSupportedException {
-        FlowPlot p1 = new FlowPlot(null);
-        FlowPlot p2 = TestUtils.clone(p1);
-        assertTrue(p1 != p2);
-        assertTrue(p1.getClass() == p2.getClass());
+        
+        p1.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        assertFalse(p1.equals(p2));
+        p2.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        assertTrue(p1.equals(p2));
+        
+        p1.setNodeColorSwatch(FlowColors.createBlueOceanColors());
+        assertFalse(p1.equals(p2));
+        p2.setNodeColorSwatch(FlowColors.createBlueOceanColors());
         assertTrue(p1.equals(p2));
     }
 
