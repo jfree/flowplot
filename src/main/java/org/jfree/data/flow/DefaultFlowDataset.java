@@ -38,10 +38,13 @@ package org.jfree.data.flow;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import org.jfree.chart.plot.flow.FlowUtils;
 import org.jfree.chart.util.Args;
 import org.jfree.chart.util.PublicCloneable;
@@ -56,12 +59,22 @@ import org.jfree.data.general.AbstractDataset;
 public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset 
         implements FlowDataset<K>, PublicCloneable, Serializable {
 
-    /** The nodes from source to destination. */
+    /** 
+     * The nodes at each stage.  The list will have N+1 entries, where N is
+     * the number of stages - the last entry contains the destination nodes for 
+     * the final stage.
+     */
     private List<List<K>> nodes;
+    
+    /** Node properties. */
+    private Map<NodeKey, Map<String, Object>> nodeProperties;
     
     /** Storage for the flows. */
     private Map<FlowKey<K>, Number> flows;
     
+    /** Flow properties. */
+    private Map<FlowKey, Map<String, Object>> flowProperties;
+
     /**
      * Creates a new dataset that is initially empty.
      */
@@ -69,7 +82,9 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
         this.nodes = new ArrayList<>();
         this.nodes.add(new ArrayList<>());
         this.nodes.add(new ArrayList<>());
+        this.nodeProperties = new HashMap<>();
         this.flows = new HashMap<>();
+        this.flowProperties = new HashMap<>();
     }
 
     /**
@@ -94,6 +109,42 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
     @Override
     public List<K> getDestinations(int stage) {
         return new ArrayList<>(this.nodes.get(stage + 1));
+    }
+
+    public Set<NodeKey<K>> getAllNodes() {
+        Set<NodeKey<K>> result = new HashSet<>();
+        for (int s = 0; s <= this.getStageCount(); s++) {
+            for (K key : this.getSources(s)) {
+                result.add(new NodeKey(s, key));
+            }
+        }
+        return result;
+    }
+ 
+    /**
+     * Returns the value of a property, if specified, for the specified node.  
+     *
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * @param propertyKey  the node key ({@code null} not permitted).
+     * 
+     * @return The property value, or {@code null}. 
+     */    
+    public Object getNodeProperty(NodeKey<K> nodeKey, String propertyKey) {
+        Map<String, Object> props = this.nodeProperties.get(nodeKey);
+        if (props != null) {
+            return props.get(propertyKey);
+        }
+        return null;
+    }
+    
+    public void setNodeProperty(NodeKey<K> nodeKey, String propertyKey, Object value) {
+        Map<String, Object> props = this.nodeProperties.get(nodeKey);
+        if (props == null) {
+            props = new HashMap<>();
+            this.nodeProperties.put(nodeKey, props);
+        }
+        props.put(propertyKey, value);
+        fireDatasetChanged();
     }
 
     /**
@@ -140,6 +191,31 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
     }
 
     /**
+     * Returns the value of a property, if specified, for the specified flow.  
+     * 
+     * @param flowKey  flowKey ({@code null} not permitted).
+     * 
+     * @return The property value, or {@code null}. 
+     */    
+    public Object getFlowProperty(FlowKey flowKey, String propertyKey) {
+        Map<String, Object> props = this.flowProperties.get(flowKey);
+        if (props != null) {
+            return props.get(propertyKey);
+        }
+        return null;      
+    }
+
+    public void setFlowProperty(FlowKey<K> flowKey, String propertyKey, Object value) {
+        Map<String, Object> props = this.flowProperties.get(flowKey);
+        if (props == null) {
+            props = new HashMap<>();
+            this.flowProperties.put(flowKey, props);
+        }
+        props.put(propertyKey, value);
+        fireDatasetChanged();
+    }
+
+    /**
      * Returns the number of flow stages.  A flow dataset always has one or
      * more stages, so this method will return {@code 1} even for an empty
      * dataset (one with no sources, destinations or flows defined).
@@ -149,6 +225,37 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
     @Override
     public int getStageCount() {
         return this.nodes.size() - 1;
+    }
+    
+    @Override
+    public Set<FlowKey<K>> getAllFlows() {
+        return new HashSet<>(this.flows.keySet());    
+    }
+    
+    public List<FlowKey<K>> getInFlows(NodeKey nodeKey) {
+        if (nodeKey.getStage() == 0) {
+            return Collections.EMPTY_LIST;
+        }
+        List<FlowKey<K>> result = new ArrayList<>();
+        for (FlowKey flowKey : this.flows.keySet()) {
+            if (flowKey.getStage() == nodeKey.getStage() - 1 && flowKey.getDestination().equals(nodeKey.getNode())) {
+                result.add(flowKey);
+            }
+        }
+        return result;
+    }
+
+    public List<FlowKey> getOutFlows(NodeKey nodeKey) {
+        if (nodeKey.getStage() == this.getStageCount()) {
+            return Collections.EMPTY_LIST;
+        }
+        List<FlowKey> result = new ArrayList<>();
+        for (FlowKey flowKey : this.flows.keySet()) {
+            if (flowKey.getStage() == nodeKey.getStage() && flowKey.getSource().equals(nodeKey.getNode())) {
+                result.add(flowKey);
+            }
+        }
+        return result;
     }
 
     /**

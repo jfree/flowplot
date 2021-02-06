@@ -37,6 +37,7 @@
 package org.jfree.data.flow;
 
 import java.util.List;
+import java.util.Set;
 import org.jfree.data.general.Dataset;
 
 /**
@@ -81,7 +82,24 @@ public interface FlowDataset<K extends Comparable<K>> extends Dataset {
      * @return A list of the sources at the specified stage (never {@code null}).
      */
     List<K> getDestinations(int stage);
+
+    /**
+     * Returns a set of keys for all the nodes in the dataset.
+     * 
+     * @return A set. 
+     */
+    Set<NodeKey<K>> getAllNodes();
     
+    /**
+     * Returns the value of a property, if specified, for the specified node.  
+     *
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * @param propertyKey  the node key ({@code null} not permitted).
+     * 
+     * @return The property value, or {@code null}. 
+     */    
+    Object getNodeProperty(NodeKey<K> nodeKey, String propertyKey);
+
     /**
      * Returns the flow between a source node and a destination node at a
      * specified stage.  This must be 0 or greater.  The dataset can return
@@ -95,4 +113,21 @@ public interface FlowDataset<K extends Comparable<K>> extends Dataset {
      */
     Number getFlow(int stage, K source, K destination);
     
+    /**
+     * Returns a set of keys for all the flows in the dataset.
+     * 
+     * @return A set. 
+     */
+    Set<FlowKey<K>> getAllFlows();
+
+    /**
+     * Returns the value of a property, if specified, for the specified flow.  
+     * 
+     * @param flowKey  the flow key ({@code null} not permitted).
+     * @param propertyKey  the property key ({@code null} not permitted).
+     * 
+     * @return The property value, or {@code null}. 
+     */    
+    Object getFlowProperty(FlowKey flowKey, String propertyKey);
+
 }

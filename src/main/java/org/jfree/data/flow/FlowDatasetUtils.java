@@ -116,5 +116,74 @@ public class FlowDatasetUtils {
         }
         return total;
     }
+    
+    /**
+     * Returns {@code true} if any of the nodes in the dataset have a property 
+     * 'selected' with the value {@code Boolean.TRUE}, and 
+     * {@code false} otherwise.
+     * 
+     * @param dataset  the dataset ({@code null} not permitted).
+     * 
+     * @return A boolean. 
+     */
+    public static boolean hasNodeSelections(FlowDataset dataset) {
+        for (int s = 0; s < dataset.getStageCount() + 1; s++) { // '+1' to include final destination nodes 
+            for (Object source : dataset.getSources(s)) {
+                Comparable c = (Comparable) source;
+                NodeKey nodeKey = new NodeKey(s, c);
+                if (Boolean.TRUE.equals(dataset.getNodeProperty(nodeKey, "selected"))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Returns the number of selected nodes.
+     * 
+     * @param dataset  the dataset ({@code null} not permitted).
+     * 
+     * @return The number of selected nodes. 
+     */
+    public static int selectedNodeCount(FlowDataset dataset) {
+        int result = 0;
+        for (int s = 0; s < dataset.getStageCount() + 1; s++) { // '+1' to include final destination nodes 
+            for (Object source : dataset.getSources(s)) {
+                Comparable c = (Comparable) source;
+                NodeKey nodeKey = new NodeKey(s, c);
+                if (Boolean.TRUE.equals(dataset.getNodeProperty(nodeKey, "selected"))) {
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns {@code true} if any of the flows in the dataset have a property 
+     * 'selected' with the value {@code Boolean.TRUE}, and 
+     * {@code false} otherwise.
+     * 
+     * @param dataset  the dataset ({@code null} not permitted).
+     * 
+     * @return A boolean. 
+     */
+    public static boolean hasFlowSelections(FlowDataset dataset) {
+        for (int s = 0; s < dataset.getStageCount(); s++) { 
+            for (Object source : dataset.getSources(s)) {
+                Comparable sourceKey = (Comparable) source;
+                for (Object destination : dataset.getDestinations(s)) {
+                    Comparable destinationKey = (Comparable) destination;
+                    FlowKey flowKey = new FlowKey(s, sourceKey, destinationKey);
+                    if (Boolean.TRUE.equals(dataset.getFlowProperty(flowKey, "selected"))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 }
 

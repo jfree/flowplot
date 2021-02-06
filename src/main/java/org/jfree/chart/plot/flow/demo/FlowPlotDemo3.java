@@ -36,6 +36,7 @@
 package org.jfree.chart.plot.flow.demo;
 
 import java.awt.Color;
+import java.util.Set;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartMouseEvent;
@@ -44,17 +45,21 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.flow.FlowColors;
-import org.jfree.chart.plot.flow.FlowEntity;
 import org.jfree.chart.plot.flow.FlowPlot;
 import org.jfree.chart.plot.flow.NodeEntity;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
+import org.jfree.data.flow.FlowDatasetUtils;
+import org.jfree.data.flow.FlowKey;
+import org.jfree.data.flow.NodeKey;
 
 /**
- * A flow plot showing migration data from https://www.data-to-viz.com/graph/sankey.html
+ * A flow plot showing data from https://statisticsnz.shinyapps.io/trade_dashboard/
  */
 public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
+    
+    private DefaultFlowDataset dataset;
     
     /**
      * Creates a new demo application.
@@ -74,7 +79,7 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
      * @return A panel.
      */
     public JPanel createDemoPanel() {
-        FlowDataset dataset = createDataset();
+        this.dataset = createDataset();
         JFreeChart chart = createChart(dataset);
         ChartPanel panel = new ChartPanel(chart);
         panel.addChartMouseListener(this);
@@ -82,46 +87,29 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
     }
 
     /**
-     * Creates a dataset (source https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/13_AdjacencyDirectedWeighted.csv).
+     * Creates a dataset (source https://statisticsnz.shinyapps.io/trade_dashboard/).
      *
      * @return a dataset.
      */
-    private static FlowDataset createDataset() {
+    private static DefaultFlowDataset createDataset() {
         DefaultFlowDataset<String> dataset = new DefaultFlowDataset<>();
-        dataset.setFlow(0, "Africa", "Africa", 3.142471);
-        dataset.setFlow(0, "Africa", "Europe", 2.107883);
-        dataset.setFlow(0, "Africa", "North America", 0.540887);
-        dataset.setFlow(0, "Africa", "West Asia", 0.673004);
-        dataset.setFlow(0, "East Asia", "East Asia", 1.630997);
-        dataset.setFlow(0, "East Asia", "Europe", 0.601265);
-        dataset.setFlow(0, "East Asia", "North America", 0.97306);
-        dataset.setFlow(0, "East Asia", "Oceania", 0.333608);
-        dataset.setFlow(0, "East Asia", "South East Asia", 0.380388);
-        dataset.setFlow(0, "East Asia", "West Asia", 0.869311);
-        dataset.setFlow(0, "Europe", "Europe", 2.401476);
-        dataset.setFlow(0, "Latin America", "Europe", 1.762587);
-        dataset.setFlow(0, "Latin America", "Latin America", 0.879198);
-        dataset.setFlow(0, "Latin America", "North America", 3.627847);
-        dataset.setFlow(0, "North America", "Europe", 1.215929);
-        dataset.setFlow(0, "North America", "North America", 0.276908);
-        dataset.setFlow(0, "Oceania", "Europe", 0.17037);
-        dataset.setFlow(0, "Oceania", "Oceania", 0.190706);
-        dataset.setFlow(0, "South East Asia", "East Asia", 0.525881);
-        dataset.setFlow(0, "South Asia", "Europe", 1.390272);
-        dataset.setFlow(0, "South Asia", "North America", 1.508008);
-        dataset.setFlow(0, "South Asia", "Oceania", 0.34742);
-        dataset.setFlow(0, "South Asia", "South Asia", 1.307907);
-        dataset.setFlow(0, "South Asia", "West Asia", 4.902081);
-        dataset.setFlow(0, "South East Asia", "East Asia", 0.145264);
-        dataset.setFlow(0, "South East Asia", "Europe", 0.468762);
-        dataset.setFlow(0, "South East Asia", "North America", 1.057904);
-        dataset.setFlow(0, "South East Asia", "Oceania", 0.278746);
-        dataset.setFlow(0, "South East Asia", "South East Asia", 0.781316);
-        dataset.setFlow(0, "Soviet Union", "Europe", 0.60923);
-        dataset.setFlow(0, "Soviet Union", "Soviet Union", 1.870501);
-        dataset.setFlow(0, "West Asia", "Europe", 0.449623);
-        dataset.setFlow(0, "West Asia", "North America", 0.169274);
-        dataset.setFlow(0, "West Asia", "West Asia", 0.927243);
+        dataset.setFlow(0, "Goods", "Australia", 2101);
+        dataset.setFlow(0, "Services", "Australia", 714);
+        dataset.setFlow(0, "Goods", "China", 3397);
+        dataset.setFlow(0, "Services", "China", 391);
+        dataset.setFlow(1, "Australia", "Cereal preparations", 179);
+        dataset.setFlow(1, "Australia", "Machinery", 173);
+        dataset.setFlow(1, "Australia", "Beverages", 170);
+        dataset.setFlow(1, "Australia", "Dairy", 165);
+        dataset.setFlow(1, "Australia", "Misc Food", 131);
+        dataset.setFlow(1, "Australia", "Other Goods", 1283);
+        dataset.setFlow(1, "Australia", "Travel", 198);
+        dataset.setFlow(1, "China", "Dairy", 848);
+        dataset.setFlow(1, "China", "Wood", 706);
+        dataset.setFlow(1, "China", "Meat", 463);
+        dataset.setFlow(1, "China", "Fruit & Nuts", 296);
+        dataset.setFlow(1, "China", "Cereal preparations", 214);
+        dataset.setFlow(1, "China", "Other Goods", 870);
         return dataset;
     }
     
@@ -137,10 +125,66 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
         plot.setBackgroundPaint(Color.BLACK);
         plot.setDefaultNodeLabelPaint(Color.WHITE);
         plot.setNodeColorSwatch(FlowColors.createPastelColors());
-        JFreeChart chart = new JFreeChart("Migration Patterns", plot);
+        JFreeChart chart = new JFreeChart("Selected NZ Exports Sept 2020", plot);
         return chart;
     }    
     
+    /**
+     * Detect when the user has clicked on a node.  If it was selected,
+     * @param event 
+     */
+    @Override
+    public void chartMouseClicked(ChartMouseEvent event) {
+        ChartEntity entity = event.getEntity();
+        if (entity instanceof NodeEntity) {
+            NodeEntity nodeEntity = (NodeEntity) entity;
+            NodeKey clickeNodeKey = nodeEntity.getKey();
+            boolean selected = Boolean.TRUE.equals(this.dataset.getNodeProperty(clickeNodeKey, "selected"));
+            if (selected) {
+                if (FlowDatasetUtils.selectedNodeCount(dataset) > 1) {
+                    for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                        this.dataset.setNodeProperty(nodeKey, "selected", false);
+                    }
+                    this.dataset.setNodeProperty(clickeNodeKey, "selected", true);
+                } else {
+                    for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                        this.dataset.setNodeProperty(nodeKey, "selected", true);
+                    }        
+                }
+            } else {
+                for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                    this.dataset.setNodeProperty(nodeKey, "selected", false);
+                }
+                this.dataset.setNodeProperty(clickeNodeKey, "selected", true);
+            }
+            for (FlowKey<?> flowKey : (Set<FlowKey<?>>) this.dataset.getAllFlows()) {
+                this.dataset.setFlowProperty(flowKey, "selected", isSelected(flowKey, this.dataset));
+            }
+        }
+    }
+    
+    private boolean isSelected(FlowKey<?> flowKey, FlowDataset dataset) {
+        NodeKey sourceKey = new NodeKey(flowKey.getStage(), flowKey.getSource());
+        if (Boolean.TRUE.equals(dataset.getNodeProperty(sourceKey, "selected"))) {
+            return true;
+        }
+        NodeKey destinationKey = new NodeKey(flowKey.getStage() + 1, flowKey.getDestination());
+        if (Boolean.TRUE.equals(dataset.getNodeProperty(destinationKey, "selected"))) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * As the mouse moves over a flow, it will be highlighted.
+     * 
+     * @param event  the event.
+     */
+    @Override
+    public void chartMouseMoved(ChartMouseEvent event) {
+        // do nothing     
+    }
+
     /**
      * Starting point for the demonstration application when it is run as
      * a stand-alone application.
@@ -153,24 +197,6 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
         demo.pack();
         UIUtils.centerFrameOnScreen(demo);
         demo.setVisible(true);
-    }
-
-    @Override
-    public void chartMouseClicked(ChartMouseEvent event) {
-        ChartEntity entity = event.getEntity();
-        if (entity instanceof NodeEntity) {
-            NodeEntity nodeEntity = (NodeEntity) entity;
-            System.out.println("User clicked on node " + nodeEntity.getKey());
-        }
-        if (entity instanceof FlowEntity) {
-            FlowEntity flowEntity = (FlowEntity) entity;
-            System.out.println("User clicked on flow " + flowEntity.getKey());
-        }
-    }
-
-    @Override
-    public void chartMouseMoved(ChartMouseEvent event) {
-        
     }
 
 }
