@@ -37,7 +37,9 @@
 package org.jfree.chart.plot.flow;
 
 import java.awt.Shape;
+import java.util.Objects;
 import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.util.Args;
 import org.jfree.data.flow.FlowKey;
 
 /**
@@ -50,12 +52,14 @@ public class FlowEntity extends ChartEntity {
     /**
      * Creates a new instance.
      * 
+     * @param key  the key identifying the flow ({@code null} not permitted).
      * @param area  the outline of the entity ({@code null} not permitted).
      * @param toolTipText  the tool tip text.
      * @param urlText  the URL text.
      */
     public FlowEntity(FlowKey key, Shape area, String toolTipText, String urlText) {
         super(area, toolTipText, urlText);
+        Args.nullNotPermitted(key, "key");
         this.key = key;
     }
     
@@ -97,4 +101,12 @@ public class FlowEntity extends ChartEntity {
         }
         return super.equals(obj);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + Objects.hashCode(this.key);
+        return hash;
+    }
+
 }
