@@ -446,32 +446,34 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         // use default JFreeChart background handling
         drawBackground(g2, area);
 
-        int stageCount = this.dataset.getStageCount();
-        boolean hasNodeSelections = FlowDatasetUtils.hasNodeSelections(this.dataset);
-        boolean hasFlowSelections = FlowDatasetUtils.hasFlowSelections(this.dataset);
-        
         // we need to ensure there is space to show all the inflows and all 
         // the outflows at each node group, so first we calculate the max
         // flow space required - for each node in the group, consider the 
         // maximum of the inflow and the outflow
-        int maxNodes = this.dataset.getSources(0).size();
-        double maxFlowSpace = 0.0;
+        double flow2d = Double.POSITIVE_INFINITY;
+        double nodeMargin2d = this.nodeMargin * area.getHeight();
+        int stageCount = this.dataset.getStageCount();
         for (int stage = 0; stage < this.dataset.getStageCount(); stage++) {
-            double nodeTotal = 0.0;
+            int nodeCount = this.dataset.getSources(stage).size();
+            double flowTotal = 0.0;
             for (Object s : this.dataset.getSources(stage)) {
-                maxNodes = Math.max(maxNodes, this.dataset.getDestinations(stage).size());
                 Comparable source = (Comparable) s;
                 double inflow = FlowDatasetUtils.calculateInflow(this.dataset, source, stage);
                 double outflow = FlowDatasetUtils.calculateOutflow(this.dataset, source, stage);
-                nodeTotal = nodeTotal + Math.max(inflow, outflow);
+                flowTotal = flowTotal + Math.max(inflow, outflow);
             }
-            maxFlowSpace = Math.max(maxFlowSpace, nodeTotal);
+            double availableH = area.getHeight() - (nodeCount - 1) * nodeMargin2d;
+            if (flowTotal > 0.0) {
+                flow2d = Math.min(availableH / flowTotal, flow2d);
+            }
         }
         
         double stageWidth = (area.getWidth() - ((stageCount + 1) * this.nodeWidth)) / stageCount;
         double flowOffset = area.getWidth() * this.flowMargin;
         
         Map<NodeKey, Rectangle2D> nodeRects = new HashMap<>();
+        boolean hasNodeSelections = FlowDatasetUtils.hasNodeSelections(this.dataset);
+        boolean hasFlowSelections = FlowDatasetUtils.hasFlowSelections(this.dataset);
         
         // iterate over all the stages, we can render the source node rects and
         // the flows ... we should add the destination node rects last, then
@@ -482,15 +484,13 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
             double stageRight = stageLeft + stageWidth;
             
             // calculate the source node and flow rectangles
-            double margin = this.nodeMargin * area.getHeight();
-            double availableHeight = area.getHeight() - ((maxNodes-1) * margin);
             Map<FlowKey, Rectangle2D> sourceFlowRects = new HashMap<>();
             double nodeY = area.getY();
             for (Object s : this.dataset.getSources(stage)) {
                 Comparable source = (Comparable) s;
                 double inflow = FlowDatasetUtils.calculateInflow(dataset, source, stage);
                 double outflow = FlowDatasetUtils.calculateOutflow(dataset, source, stage);
-                double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
+                double nodeHeight = (Math.max(inflow, outflow) * flow2d);
                 Rectangle2D nodeRect = new Rectangle2D.Double(stageLeft - nodeWidth, nodeY, nodeWidth, nodeHeight);
                 if (entities != null) {
                     entities.add(new NodeEntity(new NodeKey(stage, source), nodeRect, source.toString()));                
@@ -501,13 +501,13 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                     Comparable destination = (Comparable) d;
                     Number flow = this.dataset.getFlow(stage, source, destination);
                     if (flow != null) {
-                        double height = availableHeight * (flow.doubleValue() / maxFlowSpace);
+                        double height = flow.doubleValue() * flow2d;
                         Rectangle2D rect = new Rectangle2D.Double(stageLeft - nodeWidth, y, nodeWidth, height);
                         sourceFlowRects.put(new FlowKey(stage, source, destination), rect);
                         y = y + height;
                     }
                 }
-                nodeY = nodeY + nodeHeight + margin;
+                nodeY = nodeY + nodeHeight + nodeMargin2d;
             }
             
             // calculate the destination rectangles
@@ -517,20 +517,20 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
                 Comparable destination = (Comparable) d;
                 double inflow = FlowDatasetUtils.calculateInflow(dataset, destination, stage + 1);
                 double outflow = FlowDatasetUtils.calculateOutflow(dataset, destination, stage + 1);
-                double nodeHeight = (Math.max(inflow, outflow) / maxFlowSpace) * availableHeight;
+                double nodeHeight = Math.max(inflow, outflow) * flow2d;
                 nodeRects.put(new NodeKey(stage + 1, destination), new Rectangle2D.Double(stageRight, nodeY, nodeWidth, nodeHeight));
                 double y = nodeY;
                 for (Object s : this.dataset.getSources(stage)) {
                     Comparable source = (Comparable) s;
                     Number flow = this.dataset.getFlow(stage, source, destination);
                     if (flow != null) {
-                        double height = (flow.doubleValue() / maxFlowSpace) * availableHeight;
+                        double height = flow.doubleValue() * flow2d;
                         Rectangle2D rect = new Rectangle2D.Double(stageRight, y, nodeWidth, height);
                         y = y + height;
                         destFlowRects.put(new FlowKey(stage, source, destination), rect);
                     }
                 }
-                nodeY = nodeY + nodeHeight + margin;
+                nodeY = nodeY + nodeHeight + nodeMargin2d;
             }
         
             for (Object s : this.dataset.getSources(stage)) {
