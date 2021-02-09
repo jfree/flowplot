@@ -111,11 +111,18 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
         return new ArrayList<>(this.nodes.get(stage + 1));
     }
 
+    /**
+     * Returns the set of keys for all the nodes in the dataset.
+     * 
+     * @return The set of keys for all the nodes in the dataset (possibly empty 
+     *     but never {@code null}).
+     */
+    @Override
     public Set<NodeKey<K>> getAllNodes() {
         Set<NodeKey<K>> result = new HashSet<>();
         for (int s = 0; s <= this.getStageCount(); s++) {
             for (K key : this.getSources(s)) {
-                result.add(new NodeKey(s, key));
+                result.add(new NodeKey<>(s, key));
             }
         }
         return result;
@@ -129,6 +136,7 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
      * 
      * @return The property value, or {@code null}. 
      */    
+    @Override
     public Object getNodeProperty(NodeKey<K> nodeKey, String propertyKey) {
         Map<String, Object> props = this.nodeProperties.get(nodeKey);
         if (props != null) {
@@ -137,6 +145,14 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
         return null;
     }
     
+    /**
+     * Sets a property for the specified node and notifies registered listeners
+     * that the dataset has changed.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * @param propertyKey  the property key ({@code null} not permitted).
+     * @param value  the property value.
+     */
     public void setNodeProperty(NodeKey<K> nodeKey, String propertyKey, Object value) {
         Map<String, Object> props = this.nodeProperties.get(nodeKey);
         if (props == null) {
@@ -197,13 +213,23 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
      * 
      * @return The property value, or {@code null}. 
      */    
-    public Object getFlowProperty(FlowKey flowKey, String propertyKey) {
+    @Override
+    public Object getFlowProperty(FlowKey<K> flowKey, String propertyKey) {
         Map<String, Object> props = this.flowProperties.get(flowKey);
         if (props != null) {
             return props.get(propertyKey);
         }
         return null;      
     }
+
+    /**
+     * Sets a property for the specified flow and notifies registered listeners
+     * that the dataset has changed.
+     * 
+     * @param flowKey  the node key ({@code null} not permitted).
+     * @param propertyKey  the property key ({@code null} not permitted).
+     * @param value  the property value.
+     */
 
     public void setFlowProperty(FlowKey<K> flowKey, String propertyKey, Object value) {
         Map<String, Object> props = this.flowProperties.get(flowKey);
@@ -227,17 +253,30 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
         return this.nodes.size() - 1;
     }
     
+    /**
+     * Returns a set of keys for all the flows in the dataset.
+     * 
+     * @return A set. 
+     */
     @Override
     public Set<FlowKey<K>> getAllFlows() {
         return new HashSet<>(this.flows.keySet());    
     }
     
+    /**
+     * Returns a list of flow keys for all the flows coming into this node.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * 
+     * @return A list of flow keys (possibly empty but never {@code null}). 
+     */
     public List<FlowKey<K>> getInFlows(NodeKey nodeKey) {
+        Args.nullNotPermitted(nodeKey, "nodeKey");
         if (nodeKey.getStage() == 0) {
             return Collections.EMPTY_LIST;
         }
         List<FlowKey<K>> result = new ArrayList<>();
-        for (FlowKey flowKey : this.flows.keySet()) {
+        for (FlowKey<K> flowKey : this.flows.keySet()) {
             if (flowKey.getStage() == nodeKey.getStage() - 1 && flowKey.getDestination().equals(nodeKey.getNode())) {
                 result.add(flowKey);
             }
@@ -245,7 +284,15 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
         return result;
     }
 
+    /**
+     * Returns a list of flow keys for all the flows going out of this node.
+     * 
+     * @param nodeKey  the node key ({@code null} not permitted).
+     * 
+     * @return A list of flow keys (possibly empty but never {@code null}). 
+     */
     public List<FlowKey> getOutFlows(NodeKey nodeKey) {
+        Args.nullNotPermitted(nodeKey, "nodeKey");
         if (nodeKey.getStage() == this.getStageCount()) {
             return Collections.EMPTY_LIST;
         }
@@ -263,7 +310,7 @@ public class DefaultFlowDataset<K extends Comparable<K>> extends AbstractDataset
      * 
      * @return A clone of the dataset.
      * 
-     * @throws CloneNotSupportedException 
+     * @throws CloneNotSupportedException if there is a problem with cloning.
      */
     @Override
     public Object clone() throws CloneNotSupportedException {

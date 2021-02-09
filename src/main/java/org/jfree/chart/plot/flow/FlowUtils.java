@@ -45,8 +45,6 @@ import org.jfree.chart.util.ObjectUtils;
  * Utility methods used by the {@link FlowPlot} class.
  */
 public class FlowUtils {
-    
-    // THE FOLLOWING METHOD IS PART OF THE CloneUtils class in JFreeChart
 
     /**
      * Returns a list containing cloned copies of the items in the source

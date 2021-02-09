@@ -40,10 +40,18 @@ import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.FlowKey;
 
 /**
- *
+ * A label generator for a flow in a flow dataset.
  */
 public interface FlowLabelGenerator {
     
+    /**
+     * Returns a label for the specified flow.
+     * 
+     * @param dataset  the flow dataset ({@code null} not permitted).
+     * @param key  the flow key ({@code null} not permitted).
+     * 
+     * @return The label (possibly {@code null}). 
+     */
     String generateLabel(FlowDataset dataset, FlowKey key);
     
 }

@@ -26,9 +26,9 @@ package org.jfree.chart.plot.flow.demo;
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * -----------------
- * FlowPlotDemo.java
- * -----------------
+ * ------------------
+ * FlowPlotDemo1.java
+ * ------------------
  * (C) Copyright 2021, by Object Refinery Limited and Contributors.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -70,7 +70,7 @@ public class FlowPlotDemo1 extends JFrame {
      * @return A panel.
      */
     public static JPanel createDemoPanel() {
-        FlowDataset dataset = createDataset();
+        FlowDataset<String> dataset = createDataset();
         JFreeChart chart = createChart(dataset);
         return new ChartPanel(chart);
     }
@@ -80,7 +80,7 @@ public class FlowPlotDemo1 extends JFrame {
      *
      * @return a dataset.
      */
-    private static FlowDataset createDataset() {
+    private static FlowDataset<String> createDataset() {
         DefaultFlowDataset<String> dataset = new DefaultFlowDataset<>();
         dataset.setFlow(0, "A", "X", 5.0);
         dataset.setFlow(0, "A", "Y", 2.0);
@@ -137,7 +137,7 @@ public class FlowPlotDemo1 extends JFrame {
      *
      * @return A sample chart.
      */
-    private static JFreeChart createChart(FlowDataset dataset) {
+    private static JFreeChart createChart(FlowDataset<String> dataset) {
         JFreeChart chart = createFlowPlot("Flow Plot", dataset);
         return chart;
     }    

@@ -84,9 +84,9 @@ public interface FlowDataset<K extends Comparable<K>> extends Dataset {
     List<K> getDestinations(int stage);
 
     /**
-     * Returns a set of keys for all the nodes in the dataset.
+     * Returns the set of keys for all the nodes in the dataset.
      * 
-     * @return A set. 
+     * @return The set of keys for all the nodes in the dataset (possibly empty but never {@code null}).
      */
     Set<NodeKey<K>> getAllNodes();
     
@@ -128,6 +128,6 @@ public interface FlowDataset<K extends Comparable<K>> extends Dataset {
      * 
      * @return The property value, or {@code null}. 
      */    
-    Object getFlowProperty(FlowKey flowKey, String propertyKey);
+    Object getFlowProperty(FlowKey<K> flowKey, String propertyKey);
 
 }

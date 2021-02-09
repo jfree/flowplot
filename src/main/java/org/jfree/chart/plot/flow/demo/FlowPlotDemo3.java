@@ -59,7 +59,7 @@ import org.jfree.data.flow.NodeKey;
  */
 public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
     
-    private DefaultFlowDataset dataset;
+    private DefaultFlowDataset<String> dataset;
     
     /**
      * Creates a new demo application.
@@ -91,12 +91,16 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
      *
      * @return a dataset.
      */
-    private static DefaultFlowDataset createDataset() {
+    private static DefaultFlowDataset<String> createDataset() {
         DefaultFlowDataset<String> dataset = new DefaultFlowDataset<>();
         dataset.setFlow(0, "Goods", "Australia", 2101);
         dataset.setFlow(0, "Services", "Australia", 714);
         dataset.setFlow(0, "Goods", "China", 3397);
         dataset.setFlow(0, "Services", "China", 391);
+        dataset.setFlow(0, "Goods", "USA", 1748);
+        dataset.setFlow(0, "Services", "USA", 583);
+        dataset.setFlow(0, "Goods", "United Kingdom", 363);
+        dataset.setFlow(0, "Services", "United Kingdom", 178);
         dataset.setFlow(1, "Australia", "Cereal preparations", 179);
         dataset.setFlow(1, "Australia", "Machinery", 173);
         dataset.setFlow(1, "Australia", "Beverages", 170);
@@ -110,6 +114,12 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
         dataset.setFlow(1, "China", "Fruit & Nuts", 296);
         dataset.setFlow(1, "China", "Cereal preparations", 214);
         dataset.setFlow(1, "China", "Other Goods", 870);
+        
+        dataset.setFlow(1, "USA", "Dairy", 95);
+        dataset.setFlow(1, "USA", "Meat", 367);
+        dataset.setFlow(1, "USA", "Travel", 90);
+        dataset.setFlow(1, "USA", "Wood", 83);
+        dataset.setFlow(1, "USA", "Beverages", 157);
         return dataset;
     }
     
@@ -130,45 +140,51 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
     }    
     
     /**
-     * Detect when the user has clicked on a node.  If it was selected,
-     * @param event 
+     * Detect when the user has clicked on a node.  If it is unselected, then
+     * it is set to selected and all other nodes are unselected.  If it is
+     * selected then the behaviour depends on whether or not other nodes are
+     * also selected.  If some other nodes are selected, they will be set
+     * to unselected and the clicked node will remain selected.  If no other
+     * nodes are selected, then all nodes are set to selected.
+     * 
+     * @param event  the event. 
      */
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
         ChartEntity entity = event.getEntity();
         if (entity instanceof NodeEntity) {
             NodeEntity nodeEntity = (NodeEntity) entity;
-            NodeKey clickeNodeKey = nodeEntity.getKey();
+            NodeKey<String> clickeNodeKey = nodeEntity.getKey();
             boolean selected = Boolean.TRUE.equals(this.dataset.getNodeProperty(clickeNodeKey, "selected"));
             if (selected) {
                 if (FlowDatasetUtils.selectedNodeCount(dataset) > 1) {
-                    for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                    for (NodeKey<String> nodeKey : (Set<NodeKey<String>>) dataset.getAllNodes()) {
                         this.dataset.setNodeProperty(nodeKey, "selected", false);
                     }
                     this.dataset.setNodeProperty(clickeNodeKey, "selected", true);
                 } else {
-                    for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                    for (NodeKey<String> nodeKey : dataset.getAllNodes()) {
                         this.dataset.setNodeProperty(nodeKey, "selected", true);
                     }        
                 }
             } else {
-                for (NodeKey<?> nodeKey : (Set<NodeKey<?>>) dataset.getAllNodes()) {
+                for (NodeKey<String> nodeKey : dataset.getAllNodes()) {
                     this.dataset.setNodeProperty(nodeKey, "selected", false);
                 }
                 this.dataset.setNodeProperty(clickeNodeKey, "selected", true);
             }
-            for (FlowKey<?> flowKey : (Set<FlowKey<?>>) this.dataset.getAllFlows()) {
+            for (FlowKey<String> flowKey : this.dataset.getAllFlows()) {
                 this.dataset.setFlowProperty(flowKey, "selected", isSelected(flowKey, this.dataset));
             }
         }
     }
     
-    private boolean isSelected(FlowKey<?> flowKey, FlowDataset dataset) {
-        NodeKey sourceKey = new NodeKey(flowKey.getStage(), flowKey.getSource());
+    private boolean isSelected(FlowKey<String> flowKey, FlowDataset<String> dataset) {
+        NodeKey<String> sourceKey = new NodeKey<>(flowKey.getStage(), flowKey.getSource());
         if (Boolean.TRUE.equals(dataset.getNodeProperty(sourceKey, "selected"))) {
             return true;
         }
-        NodeKey destinationKey = new NodeKey(flowKey.getStage() + 1, flowKey.getDestination());
+        NodeKey<String> destinationKey = new NodeKey<>(flowKey.getStage() + 1, flowKey.getDestination());
         if (Boolean.TRUE.equals(dataset.getNodeProperty(destinationKey, "selected"))) {
             return true;
         }

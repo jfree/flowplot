@@ -38,6 +38,7 @@ package org.jfree.chart.plot.flow.labels;
 
 import java.io.Serializable;
 import java.util.Formatter;
+import java.util.Objects;
 import org.jfree.chart.util.Args;
 import org.jfree.data.flow.FlowDataset;
 import org.jfree.data.flow.FlowKey;
@@ -52,7 +53,7 @@ public class StandardFlowLabelGenerator implements FlowLabelGenerator, Serializa
     private String template;
     
     /**
-     * Creates a new instance with default attributes.
+     * Creates a new instance with the default template.
      */
     public StandardFlowLabelGenerator() {
         this(DEFAULT_TEMPLATE);    
@@ -71,15 +72,24 @@ public class StandardFlowLabelGenerator implements FlowLabelGenerator, Serializa
         this.template = template;
     }
 
+    /**
+     * Returns a label for the specified flow.
+     * 
+     * @param dataset  the flow dataset ({@code null} not permitted).
+     * @param key  the flow key ({@code null} not permitted).
+     * 
+     * @return The label (possibly {@code null}). 
+     */
     @Override
     public String generateLabel(FlowDataset dataset, FlowKey key) {
         Args.nullNotPermitted(dataset, "dataset");
         Args.nullNotPermitted(key, "key");
-        Formatter formatter = new Formatter(new StringBuilder());
-        Number value = dataset.getFlow(key.getStage(), key.getSource(), key.getDestination());
-        formatter.format(this.template, key.getStage(), key.getSource(), key.getDestination(), value);
-        String result = formatter.toString();
-        formatter.close();
+        String result;
+        try (Formatter formatter = new Formatter(new StringBuilder())) {
+            Number value = dataset.getFlow(key.getStage(), key.getSource(), key.getDestination());
+            formatter.format(this.template, key.getStage(), key.getSource(), key.getDestination(), value);
+            result = formatter.toString();
+        }
         return result;
     }
     
@@ -100,6 +110,13 @@ public class StandardFlowLabelGenerator implements FlowLabelGenerator, Serializa
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.template);
+        return hash;
     }
 
 }

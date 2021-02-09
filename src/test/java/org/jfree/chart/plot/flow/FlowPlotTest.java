@@ -24,9 +24,9 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * ------------------
- * FlowPlotTests.java
- * ------------------
+ * -----------------
+ * FlowPlotTest.java
+ * -----------------
  * (C) Copyright 2021, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -62,6 +62,7 @@ public class FlowPlotTest implements PlotChangeListener {
      *
      * @param event  the event.
      */
+    @Override
     public void plotChanged(PlotChangeEvent event) {
         this.lastEvent = event;        
     }
@@ -112,6 +113,15 @@ public class FlowPlotTest implements PlotChangeListener {
     }
 
     @Test
+    public void setNodeMarginTriggersChangeEvent() {
+        this.lastEvent = null;
+        FlowPlot p1 = new FlowPlot(null);
+        p1.addChangeListener(this);
+        p1.setNodeMargin(0.02);
+        assertNotNull(this.lastEvent);
+    }
+
+    @Test
     public void setNodeLabelAlignmentTriggersChangeEvent() {
         this.lastEvent = null;
         FlowPlot p1 = new FlowPlot(null);
@@ -125,7 +135,7 @@ public class FlowPlotTest implements PlotChangeListener {
         this.lastEvent = null;
         FlowPlot p1 = new FlowPlot(null);
         p1.addChangeListener(this);
-        p1.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        p1.setNodeFillColor(new NodeKey<>(0, "A"), Color.RED);
         assertNotNull(this.lastEvent);
     }
 
@@ -163,11 +173,13 @@ public class FlowPlotTest implements PlotChangeListener {
 
     /**
      * Confirm that cloning works.
+     * 
+     * @throws CloneNotSupportedException
      */
     @Test
     public void testCloning() throws CloneNotSupportedException {
         FlowPlot p1 = new FlowPlot(null);
-        p1.setNodeFillColor(new NodeKey(0, "A"), Color.BLUE);
+        p1.setNodeFillColor(new NodeKey<>(0, "A"), Color.BLUE);
         FlowPlot p2 = TestUtils.clone(p1);
         assertTrue(p1 != p2);
         assertTrue(p1.getClass() == p2.getClass());
@@ -176,6 +188,12 @@ public class FlowPlotTest implements PlotChangeListener {
         testIndependence(p1, p2);
     }
     
+    /**
+     * Tests that two plot instances do not share any state.
+     * 
+     * @param p1  plot 1.
+     * @param p2  plot 2.
+     */
     private void testIndependence(FlowPlot p1, FlowPlot p2) {
         // test fields one by one 
         p1.setFlowMargin(0.01);
@@ -196,6 +214,11 @@ public class FlowPlotTest implements PlotChangeListener {
         p1.setDefaultNodeLabelPaint(Color.WHITE);
         assertFalse(p1.equals(p2));
         p2.setDefaultNodeLabelPaint(Color.WHITE);
+        assertTrue(p1.equals(p1));
+        
+        p1.setNodeMargin(0.05);
+        assertFalse(p1.equals(p2));
+        p2.setNodeMargin(0.05);
         assertTrue(p1.equals(p1));
         
         p1.setNodeLabelOffsetX(99.0);
@@ -228,9 +251,9 @@ public class FlowPlotTest implements PlotChangeListener {
         p2.setToolTipGenerator(new StandardFlowLabelGenerator("%4$,.0f"));
         assertTrue(p1.equals(p2));
         
-        p1.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        p1.setNodeFillColor(new NodeKey<>(0, "A"), Color.RED);
         assertFalse(p1.equals(p2));
-        p2.setNodeFillColor(new NodeKey(0, "A"), Color.RED);
+        p2.setNodeFillColor(new NodeKey<>(0, "A"), Color.RED);
         assertTrue(p1.equals(p2));
         
         p1.setNodeColorSwatch(FlowColors.createBlueOceanColors());
