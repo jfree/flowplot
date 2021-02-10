@@ -47,6 +47,7 @@ import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.plot.flow.FlowColors;
 import org.jfree.chart.plot.flow.FlowPlot;
 import org.jfree.chart.plot.flow.NodeEntity;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.chart.ui.UIUtils;
 import org.jfree.data.flow.DefaultFlowDataset;
 import org.jfree.data.flow.FlowDataset;
@@ -81,7 +82,7 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
     public JPanel createDemoPanel() {
         this.dataset = createDataset();
         JFreeChart chart = createChart(dataset);
-        ChartPanel panel = new ChartPanel(chart);
+        ChartPanel panel = new ChartPanel(chart, false);
         panel.addChartMouseListener(this);
         return panel;
     }
@@ -101,25 +102,33 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
         dataset.setFlow(0, "Services", "USA", 583);
         dataset.setFlow(0, "Goods", "United Kingdom", 363);
         dataset.setFlow(0, "Services", "United Kingdom", 178);
-        dataset.setFlow(1, "Australia", "Cereal preparations", 179);
-        dataset.setFlow(1, "Australia", "Machinery", 173);
-        dataset.setFlow(1, "Australia", "Beverages", 170);
+
+        // dairy, meat, travel, fruits & nuts, wood, beverages        
         dataset.setFlow(1, "Australia", "Dairy", 165);
-        dataset.setFlow(1, "Australia", "Misc Food", 131);
-        dataset.setFlow(1, "Australia", "Other Goods", 1283);
         dataset.setFlow(1, "Australia", "Travel", 198);
+        dataset.setFlow(1, "Australia", "Beverages", 170);
+        dataset.setFlow(1, "Australia", "Other Goods", 2815 - 165 - 198 - 170);
+        
         dataset.setFlow(1, "China", "Dairy", 848);
-        dataset.setFlow(1, "China", "Wood", 706);
         dataset.setFlow(1, "China", "Meat", 463);
+        dataset.setFlow(1, "China", "Travel", 343);
         dataset.setFlow(1, "China", "Fruit & Nuts", 296);
-        dataset.setFlow(1, "China", "Cereal preparations", 214);
-        dataset.setFlow(1, "China", "Other Goods", 870);
+        dataset.setFlow(1, "China", "Wood", 706);
+        dataset.setFlow(1, "China", "Other Goods", 3788 - 848 - 463 - 343 - 296 - 706);
+        
+        dataset.setFlow(1, "United Kingdom", "Dairy", 18);
+        dataset.setFlow(1, "United Kingdom", "Meat", 71);
+        dataset.setFlow(1, "United Kingdom", "Travel", 59);
+        dataset.setFlow(1, "United Kingdom", "Fruit & Nuts", 13);
+        dataset.setFlow(1, "United Kingdom", "Beverages", 154);
+        dataset.setFlow(1, "United Kingdom", "Other Goods", 541 - 18 - 71 - 59 - 13 - 154);
         
         dataset.setFlow(1, "USA", "Dairy", 95);
         dataset.setFlow(1, "USA", "Meat", 367);
         dataset.setFlow(1, "USA", "Travel", 90);
         dataset.setFlow(1, "USA", "Wood", 83);
         dataset.setFlow(1, "USA", "Beverages", 157);
+        dataset.setFlow(1, "USA", "Other Goods", 2331 - 95 - 367 - 90 - 83 - 157);
         return dataset;
     }
     
@@ -136,6 +145,7 @@ public class FlowPlotDemo3 extends JFrame implements ChartMouseListener {
         plot.setDefaultNodeLabelPaint(Color.WHITE);
         plot.setNodeColorSwatch(FlowColors.createPastelColors());
         JFreeChart chart = new JFreeChart("Selected NZ Exports Sept 2020", plot);
+        chart.addSubtitle(new TextTitle("Source: https://statisticsnz.shinyapps.io/trade_dashboard/"));
         return chart;
     }    
     

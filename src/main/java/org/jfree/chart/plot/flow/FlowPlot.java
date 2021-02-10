@@ -477,20 +477,35 @@ public class FlowPlot extends Plot implements Cloneable, PublicCloneable,
         double nodeMargin2d = this.nodeMargin * area.getHeight();
         int stageCount = this.dataset.getStageCount();
         for (int stage = 0; stage < this.dataset.getStageCount(); stage++) {
-            int nodeCount = this.dataset.getSources(stage).size();
+            List<Comparable> sources = this.dataset.getSources(stage);
+            int nodeCount = sources.size();
             double flowTotal = 0.0;
-            for (Object s : this.dataset.getSources(stage)) {
-                Comparable source = (Comparable) s;
+            for (Comparable source : sources) {
                 double inflow = FlowDatasetUtils.calculateInflow(this.dataset, source, stage);
                 double outflow = FlowDatasetUtils.calculateOutflow(this.dataset, source, stage);
                 flowTotal = flowTotal + Math.max(inflow, outflow);
             }
-            double availableH = area.getHeight() - (nodeCount - 1) * nodeMargin2d;
             if (flowTotal > 0.0) {
+                double availableH = area.getHeight() - (nodeCount - 1) * nodeMargin2d;
                 flow2d = Math.min(availableH / flowTotal, flow2d);
             }
+            
+            if (stage == this.dataset.getStageCount() - 1) {
+                // check inflows to the final destination nodes...
+                List<Comparable> destinations = this.dataset.getDestinations(stage);
+                int destinationCount = destinations.size();
+                flowTotal = 0.0;
+                for (Comparable destination : destinations) {
+                    double inflow = FlowDatasetUtils.calculateInflow(this.dataset, destination, stage + 1);
+                    flowTotal = flowTotal + inflow;
+                }
+                if (flowTotal > 0.0) {
+                    double availableH = area.getHeight() - (destinationCount - 1) * nodeMargin2d;
+                    flow2d = Math.min(availableH / flowTotal, flow2d);
+                }
+            }
         }
-        
+
         double stageWidth = (area.getWidth() - ((stageCount + 1) * this.nodeWidth)) / stageCount;
         double flowOffset = area.getWidth() * this.flowMargin;
         

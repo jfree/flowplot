@@ -49,21 +49,21 @@ public class FlowDatasetUtils {
      * 
      * @param <K> the type for the flow identifiers.
      * @param dataset  the dataset ({@code null} not permitted).
-     * @param destination  the destination node ({@code null} not permitted).
+     * @param node  the node ({@code null} not permitted).
      * @param stage  the stage.
      * 
      * @return The total inflow volume. 
      */
-    public static <K extends Comparable<K>> double calculateInflow(FlowDataset<K> dataset, K destination, int stage) {
+    public static <K extends Comparable<K>> double calculateInflow(FlowDataset<K> dataset, K node, int stage) {
         Args.nullNotPermitted(dataset, "dataset");
-        Args.nullNotPermitted(destination, "destination");
+        Args.nullNotPermitted(node, "node");
         if (stage == 0) {
             return 0.0;  // there are no inflows for stage 0
         }
         double inflow = 0.0;
         List<K> sourceKeys = dataset.getSources(stage - 1);
         for (K key : sourceKeys) {
-            Number n = dataset.getFlow(stage - 1, key, destination);
+            Number n = dataset.getFlow(stage - 1, key, node);
             if (n != null) {
                 inflow = inflow + n.doubleValue();
             }
